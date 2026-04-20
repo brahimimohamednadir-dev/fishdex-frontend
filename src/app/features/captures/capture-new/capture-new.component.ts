@@ -197,7 +197,11 @@ export class CaptureNewComponent implements OnInit {
         }
       },
       error: err => {
-        this.error = err.error?.message ?? 'Erreur lors de la création';
+        if (err.status === 403) {
+          this.error = 'Limite de 50 captures atteinte. Passe Premium pour continuer. ⭐';
+        } else {
+          this.error = err.error?.message ?? 'Erreur lors de la création';
+        }
         this.toast.error(this.error);
         this.loading = false;
       },

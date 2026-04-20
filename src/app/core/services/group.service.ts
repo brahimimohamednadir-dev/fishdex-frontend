@@ -1,29 +1,31 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
-import { Group, FeedItem } from '../models/group.model';
+import { Group, FeedItem, GroupRequest } from '../models/group.model';
+import { Page } from '../models/capture.model';
 
 @Injectable({ providedIn: 'root' })
 export class GroupService {
   private readonly api = `${environment.apiUrl}/groups`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
-
-  createGroup(name: string): Observable<ApiResponse<Group>> {
-    return this.http.post<ApiResponse<Group>>(this.api, { name });
+  createGroup(request: GroupRequest): Observable<ApiResponse<Group>> {
+    return this.http.post<ApiResponse<Group>>(this.api, request);
   }
 
   getGroupById(id: number): Observable<ApiResponse<Group>> {
     return this.http.get<ApiResponse<Group>>(`${this.api}/${id}`);
   }
 
-  joinGroup(id: number): Observable<ApiResponse<void>> {
-    return this.http.post<ApiResponse<void>>(`${this.api}/${id}/join`, {});
+  joinGroup(id: number): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(`${this.api}/${id}/join`, {});
   }
 
-  getGroupFeed(id: number): Observable<ApiResponse<FeedItem[]>> {
-    return this.http.get<ApiResponse<FeedItem[]>>(`${this.api}/${id}/feed`);
+  getGroupFeed(id: number, page = 0, size = 20): Observable<ApiResponse<Page<FeedItem>>> {
+    return this.http.get<ApiResponse<Page<FeedItem>>>(
+      `${this.api}/${id}/feed?page=${page}&size=${size}`
+    );
   }
 }

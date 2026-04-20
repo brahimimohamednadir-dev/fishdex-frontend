@@ -2,6 +2,8 @@ import { Species } from './species.model';
 
 export interface Capture {
   id: number;
+  userId: number;
+  username: string;
   speciesName: string;
   weight: number;
   length: number;
