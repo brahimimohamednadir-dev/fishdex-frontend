@@ -1,12 +1,18 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NavbarComponent } from './shared/components/navbar/navbar.component';
+import { ToastComponent } from './shared/components/toast/toast.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  standalone: true,
+  imports: [RouterOutlet, NavbarComponent, ToastComponent],
+  template: `
+    <app-navbar />
+    <main class="min-h-screen" style="background-color: #F8F9FA">
+      <router-outlet />
+    </main>
+    <app-toast />
+  `,
 })
-export class App {
-  protected readonly title = signal('fishdex-frontend');
-}
+export class App {}

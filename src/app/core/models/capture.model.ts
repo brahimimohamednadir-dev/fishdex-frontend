@@ -1,0 +1,34 @@
+import { Species } from './species.model';
+
+export interface Capture {
+  id: number;
+  speciesName: string;
+  weight: number;
+  length: number;
+  photoUrl: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  note: string | null;
+  caughtAt: string;
+  createdAt: string;
+  species: Species | null;
+}
+
+export interface CaptureRequest {
+  speciesName: string;
+  weight: number;
+  length: number;
+  latitude?: number;
+  longitude?: number;
+  note?: string;
+  caughtAt: string;
+  speciesId?: number;
+}
+
+export interface Page<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+}

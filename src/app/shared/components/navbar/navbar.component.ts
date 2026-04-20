@@ -1,0 +1,144 @@
+import { Component, inject, signal, HostListener } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+
+@Component({
+  selector: 'app-navbar',
+  standalone: true,
+  imports: [RouterLink, RouterLinkActive, AsyncPipe],
+  template: `
+    <header class="sticky top-0 z-50 bg-white border-b border-gray-200">
+      <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
+
+        <!-- Logo -->
+        <a routerLink="/" class="flex items-center gap-2 font-semibold text-gray-900 hover:opacity-75 transition-opacity shrink-0">
+          <span class="text-lg">🎣</span>
+          <span class="text-sm tracking-tight">FishDex</span>
+        </a>
+
+        <!-- Nav desktop -->
+        <nav class="hidden md:flex items-center gap-1">
+          <a routerLink="/captures" routerLinkActive="text-gray-900 bg-gray-100"
+             class="px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all font-medium">
+            Captures
+          </a>
+          <a routerLink="/species" routerLinkActive="text-gray-900 bg-gray-100"
+             class="px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all font-medium">
+            Espèces
+          </a>
+          @if (auth.currentUser$ | async) {
+            <a routerLink="/badges" routerLinkActive="text-gray-900 bg-gray-100"
+               class="px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all font-medium">
+              Badges
+            </a>
+          }
+        </nav>
+
+        <!-- Actions desktop -->
+        <div class="hidden md:flex items-center gap-2">
+          @if (auth.currentUser$ | async; as user) {
+            <a routerLink="/profile"
+               class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
+              <span class="w-6 h-6 rounded-full bg-gray-900 text-white text-xs flex items-center justify-center font-semibold">
+                {{ user.username.charAt(0).toUpperCase() }}
+              </span>
+              <span>{{ user.username }}</span>
+            </a>
+            <button (click)="logout()"
+                    class="px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-all font-medium">
+              Déconnexion
+            </button>
+          } @else {
+            <a routerLink="/login"
+               class="px-3 py-1.5 rounded-lg text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all font-medium">
+              Connexion
+            </a>
+            <a routerLink="/register"
+               class="px-4 py-1.5 rounded-lg text-sm font-semibold text-white bg-gray-900 hover:bg-gray-700 transition-all">
+              S'inscrire
+            </a>
+          }
+        </div>
+
+        <!-- Hamburger mobile -->
+        <button (click)="toggleMenu()"
+                class="md:hidden flex items-center justify-center w-9 h-9 rounded-lg hover:bg-gray-100 transition-all"
+                [attr.aria-label]="menuOpen() ? 'Fermer' : 'Menu'">
+          @if (menuOpen()) {
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          } @else {
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          }
+        </button>
+      </div>
+
+      <!-- Menu mobile -->
+      @if (menuOpen()) {
+        <div class="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1">
+          <a routerLink="/captures" (click)="closeMenu()"
+             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
+            🎣 Captures
+          </a>
+          <a routerLink="/species" (click)="closeMenu()"
+             class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
+            🐟 Espèces
+          </a>
+          @if (auth.currentUser$ | async; as user) {
+            <a routerLink="/badges" (click)="closeMenu()"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
+              🏆 Badges
+            </a>
+            <a routerLink="/profile" (click)="closeMenu()"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
+              <span class="w-6 h-6 rounded-full bg-gray-900 text-white text-xs flex items-center justify-center font-semibold">
+                {{ user.username.charAt(0).toUpperCase() }}
+              </span>
+              {{ user.username }}
+            </a>
+            <div class="pt-2 border-t border-gray-100">
+              <button (click)="logout()"
+                      class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all">
+                Déconnexion
+              </button>
+            </div>
+          } @else {
+            <div class="pt-2 border-t border-gray-100 flex gap-2">
+              <a routerLink="/login" (click)="closeMenu()"
+                 class="flex-1 text-center py-2.5 rounded-xl text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 transition-all">
+                Connexion
+              </a>
+              <a routerLink="/register" (click)="closeMenu()"
+                 class="flex-1 text-center py-2.5 rounded-xl text-sm font-semibold text-white bg-gray-900 hover:bg-gray-700 transition-all">
+                S'inscrire
+              </a>
+            </div>
+          }
+        </div>
+      }
+    </header>
+  `,
+})
+export class NavbarComponent {
+  auth     = inject(AuthService);
+  private router = inject(Router);
+
+  menuOpen = signal(false);
+
+  toggleMenu(): void { this.menuOpen.update(v => !v); }
+  closeMenu():  void { this.menuOpen.set(false); }
+
+  logout(): void {
+    this.closeMenu();
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void { this.closeMenu(); }
+}
