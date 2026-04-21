@@ -1,13 +1,13 @@
-import { Component, inject, signal, HostListener } from '@angular/core';
+import { Component, inject, signal, HostListener, computed } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, AsyncPipe],
+  imports: [RouterLink, RouterLinkActive],
   template: `
     <header class="sticky top-0 z-50 bg-warm-50/95 backdrop-blur-sm border-b border-warm-200">
       <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
@@ -20,16 +20,16 @@ import { AuthService } from '../../../core/services/auth.service';
 
         <!-- Nav desktop -->
         <nav class="hidden md:flex items-center gap-0.5">
-          <a routerLink="/captures" routerLinkActive="text-warm-900 bg-warm-200"
+          <a routerLink="/captures" routerLinkActive="!text-warm-900 !bg-warm-200"
              class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
             Captures
           </a>
-          <a routerLink="/species" routerLinkActive="text-warm-900 bg-warm-200"
+          <a routerLink="/species" routerLinkActive="!text-warm-900 !bg-warm-200"
              class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
             Espèces
           </a>
-          @if (auth.currentUser$ | async) {
-            <a routerLink="/badges" routerLinkActive="text-warm-900 bg-warm-200"
+          @if (user()) {
+            <a routerLink="/badges" routerLinkActive="!text-warm-900 !bg-warm-200"
                class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
               Badges
             </a>
@@ -38,13 +38,13 @@ import { AuthService } from '../../../core/services/auth.service';
 
         <!-- Actions desktop -->
         <div class="hidden md:flex items-center gap-2">
-          @if (auth.currentUser$ | async; as user) {
+          @if (user(); as u) {
             <a routerLink="/profile"
                class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-warm-700 hover:bg-warm-200 transition-all">
               <span class="w-6 h-6 rounded-full bg-forest-600 text-white text-xs flex items-center justify-center font-semibold">
-                {{ user.username.charAt(0).toUpperCase() }}
+                {{ u.username.charAt(0).toUpperCase() }}
               </span>
-              <span>{{ user.username }}</span>
+              <span>{{ u.username }}</span>
             </a>
             <button (click)="logout()"
                     class="px-3 py-1.5 rounded-lg text-sm text-warm-500 hover:text-warm-900 hover:bg-warm-200 transition-all font-medium">
@@ -82,24 +82,28 @@ import { AuthService } from '../../../core/services/auth.service';
       @if (menuOpen()) {
         <div class="md:hidden border-t border-warm-200 bg-warm-50 px-4 py-3 space-y-1">
           <a routerLink="/captures" (click)="closeMenu()"
+             routerLinkActive="!bg-warm-200 !text-warm-900"
              class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
             🎣 Captures
           </a>
           <a routerLink="/species" (click)="closeMenu()"
+             routerLinkActive="!bg-warm-200 !text-warm-900"
              class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
             🐟 Espèces
           </a>
-          @if (auth.currentUser$ | async; as user) {
+          @if (user(); as u) {
             <a routerLink="/badges" (click)="closeMenu()"
+               routerLinkActive="!bg-warm-200 !text-warm-900"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
               🏆 Badges
             </a>
             <a routerLink="/profile" (click)="closeMenu()"
+               routerLinkActive="!bg-warm-200 !text-warm-900"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
               <span class="w-6 h-6 rounded-full bg-forest-600 text-white text-xs flex items-center justify-center font-semibold">
-                {{ user.username.charAt(0).toUpperCase() }}
+                {{ u.username.charAt(0).toUpperCase() }}
               </span>
-              {{ user.username }}
+              {{ u.username }}
             </a>
             <div class="pt-2 border-t border-warm-200">
               <button (click)="logout()"
@@ -125,16 +129,22 @@ import { AuthService } from '../../../core/services/auth.service';
   `,
 })
 export class NavbarComponent {
-  auth     = inject(AuthService);
+  private auth   = inject(AuthService);
   private router = inject(Router);
+
+  // Un seul signal dérivé du BehaviorSubject — zéro re-render parasite
+  user     = toSignal(this.auth.currentUser$, { initialValue: this.auth.currentUser$.getValue() });
   menuOpen = signal(false);
+
   toggleMenu(): void { this.menuOpen.update(v => !v); }
   closeMenu():  void { this.menuOpen.set(false); }
+
   logout(): void {
     this.closeMenu();
     this.auth.logout();
     this.router.navigate(['/login']);
   }
+
   @HostListener('document:keydown.escape')
   onEscape(): void { this.closeMenu(); }
 }
