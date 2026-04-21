@@ -3,12 +3,32 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
+
+const GRACE_DAYS = 7;
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
   template: `
+    <!-- Bannière vérification email (grace period 7j) -->
+    @if (showEmailBanner()) {
+      <div class="bg-amber-50 border-b border-amber-200 px-5 py-2.5 flex items-center justify-between gap-3">
+        <p class="text-xs text-amber-800">
+          📬 <strong>Confirme ton email</strong> pour accéder à toutes les fonctionnalités.
+          Il te reste {{ graceDaysLeft() }} jour{{ graceDaysLeft() > 1 ? 's' : '' }}.
+        </p>
+        <div class="flex items-center gap-3 shrink-0">
+          <button (click)="resendVerification()"
+                  class="text-xs font-semibold text-amber-700 hover:text-amber-900 underline transition-colors">
+            Renvoyer
+          </button>
+          <button (click)="dismissBanner()" class="text-amber-400 hover:text-amber-700 transition-colors text-base leading-none">×</button>
+        </div>
+      </div>
+    }
+
     <header class="sticky top-0 z-50 bg-warm-50/95 backdrop-blur-sm border-b border-warm-200">
       <div class="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
 
@@ -131,10 +151,38 @@ import { AuthService } from '../../../core/services/auth.service';
 export class NavbarComponent {
   private auth   = inject(AuthService);
   private router = inject(Router);
+  private toast  = inject(ToastService);
 
-  // Un seul signal dérivé du BehaviorSubject — zéro re-render parasite
   user     = toSignal(this.auth.currentUser$, { initialValue: this.auth.currentUser$.getValue() });
   menuOpen = signal(false);
+  private bannerDismissed = signal(false);
+
+  showEmailBanner = computed(() => {
+    const u = this.user();
+    if (!u || u.emailVerified || this.bannerDismissed()) return false;
+    // Grace period : afficher seulement les 7 premiers jours
+    const created = new Date(u.createdAt).getTime();
+    const daysOld = (Date.now() - created) / (1000 * 60 * 60 * 24);
+    return daysOld <= GRACE_DAYS;
+  });
+
+  graceDaysLeft = computed(() => {
+    const u = this.user();
+    if (!u) return 0;
+    const created = new Date(u.createdAt).getTime();
+    const daysOld = (Date.now() - created) / (1000 * 60 * 60 * 24);
+    return Math.max(0, Math.ceil(GRACE_DAYS - daysOld));
+  });
+
+  dismissBanner(): void { this.bannerDismissed.set(true); }
+
+  resendVerification(): void {
+    this.auth.resendVerification().subscribe({
+      next:  () => this.toast.success('Email de confirmation renvoyé !'),
+      error: () => this.toast.error('Impossible d\'envoyer l\'email.'),
+    });
+    this.dismissBanner();
+  }
 
   toggleMenu(): void { this.menuOpen.update(v => !v); }
   closeMenu():  void { this.menuOpen.set(false); }

@@ -106,6 +106,20 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
              class="flex items-center justify-center gap-2 py-3 bg-white border border-warm-200 rounded-xl text-sm font-medium text-warm-700 hover:border-warm-300 hover:shadow-sm transition-all">
             🎣 Mes captures
           </a>
+          <a routerLink="/profile/sessions"
+             class="flex items-center justify-center gap-2 py-3 bg-white border border-warm-200 rounded-xl text-sm font-medium text-warm-700 hover:border-warm-300 hover:shadow-sm transition-all">
+            🔒 Sessions actives
+          </a>
+          @if (!user.twoFactorEnabled) {
+            <a routerLink="/2fa/setup"
+               class="flex items-center justify-center gap-2 py-3 bg-white border border-warm-200 rounded-xl text-sm font-medium text-warm-700 hover:border-warm-300 hover:shadow-sm transition-all">
+              🛡️ Activer la 2FA
+            </a>
+          } @else {
+            <div class="flex items-center justify-center gap-2 py-3 bg-forest-50 border border-forest-200 rounded-xl text-sm font-medium text-forest-700">
+              🛡️ 2FA activée
+            </div>
+          }
         </div>
       }
     </div>

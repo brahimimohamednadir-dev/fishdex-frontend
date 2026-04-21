@@ -6,6 +6,8 @@ export interface User {
   username: string;
   isPremium: boolean;
   captureCount: number;
+  emailVerified: boolean;
+  twoFactorEnabled: boolean;
   createdAt: string;
 }
 
