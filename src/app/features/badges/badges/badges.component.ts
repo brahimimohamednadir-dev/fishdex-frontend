@@ -26,10 +26,10 @@ const BADGE_CATALOG: BadgeDef[] = [
     <div class="max-w-4xl mx-auto px-5 py-8">
 
       <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Badges</h1>
-        <p class="text-sm text-gray-500 mt-0.5">{{ earnedCount }} obtenu{{ earnedCount > 1 ? 's' : '' }} sur {{ BADGE_CATALOG.length }}</p>
-        <div class="mt-3 w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div class="h-full bg-gray-900 rounded-full transition-all duration-500"
+        <h1 class="text-2xl font-semibold text-warm-900 tracking-tight">Badges</h1>
+        <p class="text-sm text-warm-500 mt-0.5">{{ earnedCount }} obtenu{{ earnedCount > 1 ? 's' : '' }} sur {{ BADGE_CATALOG.length }}</p>
+        <div class="mt-3 w-full h-1.5 bg-warm-200 rounded-full overflow-hidden">
+          <div class="h-full bg-forest-600 rounded-full transition-all duration-500"
                [style.width.%]="(earnedCount / BADGE_CATALOG.length) * 100">
           </div>
         </div>
@@ -49,7 +49,7 @@ const BADGE_CATALOG: BadgeDef[] = [
         </div>
 
         @if (extraBadges.length) {
-          <h2 class="text-base font-semibold text-gray-900 mt-10 mb-4">Badges spéciaux</h2>
+          <h2 class="text-base font-semibold text-warm-900 mt-10 mb-4">Badges spéciaux</h2>
           <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             @for (badge of extraBadges; track badge.id) {
               <app-badge-card [label]="badge.label" icon="🏅" [earned]="true" [earnedAt]="badge.earnedAt" />

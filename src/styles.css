@@ -4,14 +4,14 @@
 
 /* ===== Base ===== */
 html {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background-color: #F9FAFB;
-  color: #111827;
+  background-color: #F5F0E8;
+  color: #1C1917;
 }
 
 input, select, textarea, button {
@@ -21,10 +21,10 @@ input, select, textarea, button {
 /* ===== Scrollbar fine ===== */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: #D6CFC4; border-radius: 99px; }
 
 /* ===== Focus ring propre ===== */
 *:focus-visible {
-  outline: 2px solid #111827;
+  outline: 2px solid #3D6B4F;
   outline-offset: 2px;
 }

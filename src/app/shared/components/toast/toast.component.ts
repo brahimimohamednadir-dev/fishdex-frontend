@@ -46,9 +46,9 @@ export class ToastComponent {
 
   toastClasses(toast: Toast): string {
     switch (toast.type) {
-      case 'success': return 'bg-white text-gray-900 border-green-200';
-      case 'error':   return 'bg-white text-gray-900 border-red-200';
-      case 'info':    return 'bg-white text-gray-900 border-blue-200';
+      case 'success': return 'bg-white text-warm-900 border-forest-200';
+      case 'error':   return 'bg-white text-warm-900 border-red-200';
+      case 'info':    return 'bg-white text-warm-900 border-warm-300';
     }
   }
 }

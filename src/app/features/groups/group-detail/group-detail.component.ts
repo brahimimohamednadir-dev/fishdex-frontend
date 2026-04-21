@@ -15,17 +15,17 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
     <div class="max-w-2xl mx-auto px-5 py-8">
       @if (loading) { <app-loading-spinner /> }
       @else if (error) {
-        <div class="p-4 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600">{{ error }}</div>
+        <div class="p-4 bg-red-50 border border-red-100 rounded-2xl text-sm text-red-600">{{ error }}</div>
       }
       @else if (group) {
 
         <!-- Header -->
-        <div class="bg-white border border-gray-100 rounded-2xl p-6 mb-4 shadow-sm">
+        <div class="bg-white border border-warm-200 rounded-2xl p-6 mb-4 shadow-sm">
           <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
               <div class="flex items-center gap-2 flex-wrap mb-1">
-                <h1 class="text-xl font-bold text-gray-900 tracking-tight">{{ group.name }}</h1>
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                <h1 class="text-xl font-semibold text-warm-900 tracking-tight">{{ group.name }}</h1>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-warm-100 text-warm-600">
                   {{ group.type }}
                 </span>
                 @if (group.isPro) {
@@ -33,16 +33,16 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
                 }
               </div>
               @if (group.description) {
-                <p class="text-sm text-gray-500 mt-1">{{ group.description }}</p>
+                <p class="text-sm text-warm-500 mt-1">{{ group.description }}</p>
               }
-              <p class="text-xs text-gray-400 mt-2">
+              <p class="text-xs text-warm-400 mt-2">
                 {{ group.memberCount }} membre{{ group.memberCount > 1 ? 's' : '' }} ·
-                Créé par <span class="font-medium text-gray-600">{{ group.creatorUsername }}</span> ·
+                Créé par <span class="font-medium text-warm-600">{{ group.creatorUsername }}</span> ·
                 {{ group.createdAt | date:'d MMM yyyy' }}
               </p>
             </div>
             <button (click)="join()" [disabled]="joined || joining"
-                    class="shrink-0 px-4 py-2 text-sm font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-all">
+                    class="shrink-0 px-4 py-2 text-sm font-semibold text-white bg-forest-600 rounded-xl hover:bg-forest-700 disabled:opacity-50 transition-all">
               @if (joining) {
                 <span class="flex items-center gap-2">
                   <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -57,34 +57,34 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
         </div>
 
         <!-- Feed -->
-        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Activité récente</h2>
+        <h2 class="text-xs font-semibold text-warm-400 uppercase tracking-wide mb-3">Activité récente</h2>
 
         @if (feedLoading) { <app-loading-spinner /> }
         @else if (!feed.length) {
-          <div class="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl">
+          <div class="text-center py-12 border-2 border-dashed border-warm-300 rounded-2xl">
             <p class="text-3xl opacity-20 mb-2">🎣</p>
-            <p class="text-sm text-gray-500">Aucune activité pour l'instant</p>
+            <p class="text-sm text-warm-500">Aucune activité pour l'instant</p>
           </div>
         } @else {
           <div class="space-y-3">
             @for (item of feed; track item.captureId) {
-              <div class="bg-white border border-gray-100 rounded-xl p-4 flex gap-4 items-center">
+              <div class="bg-white border border-warm-200 rounded-xl p-4 flex gap-4 items-center shadow-sm">
                 @if (item.photoUrl) {
                   <img [src]="item.photoUrl" [alt]="item.speciesName"
                        class="w-14 h-14 rounded-xl object-cover flex-shrink-0">
                 } @else {
-                  <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-xl flex-shrink-0 opacity-50">🐟</div>
+                  <div class="w-14 h-14 rounded-xl bg-warm-100 flex items-center justify-center text-xl flex-shrink-0 opacity-50">🐟</div>
                 }
                 <div class="min-w-0 flex-1">
-                  <p class="text-sm font-semibold text-gray-900 truncate">{{ item.username }}</p>
-                  <p class="text-sm text-gray-600 mt-0.5">
+                  <p class="text-sm font-semibold text-warm-900 truncate">{{ item.username }}</p>
+                  <p class="text-sm text-warm-600 mt-0.5">
                     {{ item.speciesName }}
-                    <span class="text-gray-400">·</span>
+                    <span class="text-warm-300 mx-1">·</span>
                     <span class="font-medium">{{ item.weight }} kg</span>
-                    <span class="text-gray-400">·</span>
+                    <span class="text-warm-300 mx-1">·</span>
                     <span class="font-medium">{{ item.length }} cm</span>
                   </p>
-                  <p class="text-xs text-gray-400 mt-0.5">{{ item.caughtAt | date:'d MMM yyyy à HH:mm' }}</p>
+                  <p class="text-xs text-warm-400 mt-0.5">{{ item.caughtAt | date:'d MMM yyyy à HH:mm' }}</p>
                 </div>
               </div>
             }
@@ -94,13 +94,13 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
           @if ((feedPage?.totalPages ?? 0) > 1) {
             <div class="flex justify-center items-center gap-2 mt-8">
               <button (click)="loadFeed(feedCurrentPage - 1)" [disabled]="feedCurrentPage === 0"
-                      class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-30 transition-all">
+                      class="px-4 py-2 text-sm font-medium text-warm-600 bg-white border border-warm-200 rounded-xl hover:bg-warm-50 disabled:opacity-30 transition-all">
                 ← Précédent
               </button>
-              <span class="px-3 text-sm text-gray-500">{{ feedCurrentPage + 1 }} / {{ feedPage?.totalPages }}</span>
+              <span class="px-3 text-sm text-warm-500">{{ feedCurrentPage + 1 }} / {{ feedPage?.totalPages }}</span>
               <button (click)="loadFeed(feedCurrentPage + 1)"
                       [disabled]="feedCurrentPage >= (feedPage?.totalPages ?? 1) - 1"
-                      class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-30 transition-all">
+                      class="px-4 py-2 text-sm font-medium text-warm-600 bg-white border border-warm-200 rounded-xl hover:bg-warm-50 disabled:opacity-30 transition-all">
                 Suivant →
               </button>
             </div>
@@ -158,7 +158,7 @@ export class GroupDetailComponent implements OnInit {
       error: err => {
         this.joining = false;
         const msg = err.error?.message ?? 'Impossible de rejoindre le groupe';
-        if (err.status === 409) this.joined = true; // déjà membre
+        if (err.status === 409) this.joined = true;
         else this.toast.error(msg);
       },
     });

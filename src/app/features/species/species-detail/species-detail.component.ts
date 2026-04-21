@@ -10,19 +10,19 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   imports: [RouterLink, LoadingSpinnerComponent],
   template: `
     <div class="max-w-2xl mx-auto px-5 py-8">
-      <a routerLink="/species" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">
+      <a routerLink="/species" class="text-sm text-warm-400 hover:text-warm-700 transition-colors">
         ← Encyclopédie
       </a>
 
       @if (loading) { <app-loading-spinner /> }
       @else if (error) {
-        <div class="mt-4 p-4 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600">{{ error }}</div>
+        <div class="mt-4 p-4 bg-red-50 border border-red-100 rounded-2xl text-sm text-red-600">{{ error }}</div>
       }
       @else if (species) {
         <div class="mt-6">
 
           <!-- Photo -->
-          <div class="rounded-2xl overflow-hidden bg-gray-100 aspect-[16/9]">
+          <div class="rounded-2xl overflow-hidden bg-warm-100 aspect-[16/9]">
             @if (species.imageUrl) {
               <img [src]="species.imageUrl" [alt]="species.commonName" class="w-full h-full object-cover">
             } @else {
@@ -33,42 +33,39 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
           <div class="mt-6">
             <div class="flex items-start justify-between gap-4 flex-wrap">
               <div>
-                <h1 class="text-2xl font-bold text-gray-900 tracking-tight">{{ species.commonName }}</h1>
-                <p class="text-sm text-gray-400 italic mt-0.5">{{ species.latinName }}</p>
+                <h1 class="text-2xl font-semibold text-warm-900 tracking-tight">{{ species.commonName }}</h1>
+                <p class="text-sm text-warm-400 italic mt-0.5">{{ species.latinName }}</p>
               </div>
+              @if (species.habitat) {
+                <span class="text-xs text-warm-600 bg-warm-100 border border-warm-200 px-3 py-1 rounded-full font-medium">
+                  {{ species.habitat }}
+                </span>
+              }
             </div>
 
             @if (species.description) {
-              <p class="mt-4 text-sm text-gray-600 leading-relaxed">{{ species.description }}</p>
+              <p class="mt-4 text-sm text-warm-600 leading-relaxed">{{ species.description }}</p>
             }
 
             <!-- Poids min / max -->
             @if (species.minWeightKg || species.maxWeightKg) {
               <div class="grid grid-cols-2 gap-3 mt-6">
                 @if (species.minWeightKg) {
-                  <div class="bg-white border border-gray-100 rounded-xl p-4">
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Poids min. légal</p>
-                    <p class="text-2xl font-bold text-gray-900 mt-1">
-                      {{ species.minWeightKg }}<span class="text-sm font-medium text-gray-500 ml-1">kg</span>
+                  <div class="bg-white border border-warm-200 rounded-xl p-4 shadow-sm">
+                    <p class="text-xs font-semibold text-warm-400 uppercase tracking-wide">Poids min. légal</p>
+                    <p class="text-2xl font-bold text-warm-900 mt-1">
+                      {{ species.minWeightKg }}<span class="text-sm font-medium text-warm-500 ml-1">kg</span>
                     </p>
                   </div>
                 }
                 @if (species.maxWeightKg) {
-                  <div class="bg-white border border-gray-100 rounded-xl p-4">
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Poids max. connu</p>
-                    <p class="text-2xl font-bold text-gray-900 mt-1">
-                      {{ species.maxWeightKg }}<span class="text-sm font-medium text-gray-500 ml-1">kg</span>
+                  <div class="bg-white border border-warm-200 rounded-xl p-4 shadow-sm">
+                    <p class="text-xs font-semibold text-warm-400 uppercase tracking-wide">Poids max. connu</p>
+                    <p class="text-2xl font-bold text-warm-900 mt-1">
+                      {{ species.maxWeightKg }}<span class="text-sm font-medium text-warm-500 ml-1">kg</span>
                     </p>
                   </div>
                 }
-              </div>
-            }
-
-            <!-- Habitat -->
-            @if (species.habitat) {
-              <div class="mt-4 bg-white border border-gray-100 rounded-xl p-4">
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Habitat</p>
-                <p class="text-sm text-gray-700">{{ species.habitat }}</p>
               </div>
             }
           </div>

@@ -16,9 +16,9 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
         (dragover)="onDragOver($event)"
         (dragleave)="onDragLeave($event)"
         (drop)="onDrop($event)"
-        [class.border-gray-900]="isDragging"
-        [class.bg-gray-50]="isDragging"
-        class="relative cursor-pointer border-2 border-dashed border-gray-200 rounded-2xl transition-all hover:border-gray-400 hover:bg-gray-50 overflow-hidden"
+        [class.border-forest-400]="isDragging"
+        [class.bg-forest-50]="isDragging"
+        class="relative cursor-pointer border-2 border-dashed border-warm-300 rounded-2xl transition-all hover:border-warm-400 hover:bg-warm-50 overflow-hidden"
       >
         <!-- Preview existante -->
         @if (previewUrl || currentPhotoUrl) {
@@ -34,18 +34,18 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
         } @else {
           <!-- Placeholder -->
           <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
-            <div class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mb-3">
-              <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-12 h-12 rounded-2xl bg-warm-100 flex items-center justify-center mb-3">
+              <svg class="w-6 h-6 text-warm-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                       d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                       d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-            <p class="text-sm font-medium text-gray-700">
+            <p class="text-sm font-medium text-warm-700">
               @if (isDragging) { Dépose ici } @else { Glisse une photo ou clique }
             </p>
-            <p class="text-xs text-gray-400 mt-1">JPG, PNG, WEBP · max 10 Mo</p>
+            <p class="text-xs text-warm-400 mt-1">JPG, PNG, WEBP · max 10 Mo</p>
           </div>
         }
       </div>
@@ -53,12 +53,12 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
       <!-- Barre de progression -->
       @if (uploading) {
         <div class="space-y-1">
-          <div class="flex justify-between text-xs text-gray-500">
+          <div class="flex justify-between text-xs text-warm-500">
             <span>Upload en cours...</span>
             <span>{{ progress }}%</span>
           </div>
-          <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div class="h-full bg-gray-900 rounded-full transition-all duration-300"
+          <div class="h-1.5 bg-warm-100 rounded-full overflow-hidden">
+            <div class="h-full bg-forest-600 rounded-full transition-all duration-300"
                  [style.width.%]="progress"></div>
           </div>
         </div>
@@ -75,7 +75,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
       @if (previewUrl || currentPhotoUrl) {
         <div class="flex gap-2">
           <button type="button" (click)="fileInput.click()"
-                  class="flex-1 py-2 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-all">
+                  class="flex-1 py-2 text-xs font-medium text-warm-600 bg-warm-50 border border-warm-200 rounded-lg hover:bg-warm-100 transition-all">
             Changer
           </button>
           <button type="button" (click)="remove()"

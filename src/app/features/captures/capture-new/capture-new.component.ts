@@ -15,19 +15,19 @@ import { PhotoUploadComponent } from '../../../shared/components/photo-upload/ph
     <div class="max-w-2xl mx-auto px-5 py-8">
 
       <div class="mb-8">
-        <a routerLink="/captures" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">
+        <a routerLink="/captures" class="text-sm text-warm-400 hover:text-warm-700 transition-colors">
           ← Mes captures
         </a>
-        <h1 class="mt-3 text-2xl font-bold text-gray-900 tracking-tight">Nouvelle capture</h1>
-        <p class="mt-1 text-sm text-gray-500">Enregistre les détails de ta prise.</p>
+        <h1 class="mt-3 text-2xl font-semibold text-warm-900 tracking-tight">Nouvelle capture</h1>
+        <p class="mt-1 text-sm text-warm-500">Enregistre les détails de ta prise.</p>
       </div>
 
-      <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+      <div class="bg-white border border-warm-200 rounded-2xl p-6 shadow-sm">
         <form [formGroup]="form" (ngSubmit)="submit()">
 
           <!-- Photo upload en haut -->
           <div class="mb-6">
-            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+            <label class="block text-xs font-semibold text-warm-500 uppercase tracking-wide mb-2">
               Photo
             </label>
             <app-photo-upload
@@ -38,24 +38,24 @@ import { PhotoUploadComponent } from '../../../shared/components/photo-upload/ph
               (removePhoto)="onPhotoRemoved()" />
           </div>
 
-          <div class="border-t border-gray-100 pt-6 space-y-5">
+          <div class="border-t border-warm-100 pt-6 space-y-5">
 
             <div>
-              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+              <label class="block text-xs font-semibold text-warm-500 uppercase tracking-wide mb-1.5">
                 Espèce *
               </label>
               <input type="text" formControlName="speciesName"
-                     class="w-full px-3.5 py-2.5 text-sm bg-white border border-gray-200 rounded-lg outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all"
+                     class="w-full px-3.5 py-2.5 text-sm bg-white border border-warm-300 rounded-xl outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 transition-all text-warm-900 placeholder-warm-400"
                      placeholder="Brochet, Carpe, Truite...">
             </div>
 
             @if (speciesList.length) {
               <div>
-                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                <label class="block text-xs font-semibold text-warm-500 uppercase tracking-wide mb-1.5">
                   Lier au catalogue
                 </label>
                 <select formControlName="speciesId"
-                        class="w-full px-3.5 py-2.5 text-sm bg-white border border-gray-200 rounded-lg outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all">
+                        class="w-full px-3.5 py-2.5 text-sm bg-white border border-warm-300 rounded-xl outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 transition-all text-warm-900">
                   <option value="">— Optionnel —</option>
                   @for (s of speciesList; track s.id) {
                     <option [value]="s.id">{{ s.commonName }}</option>
@@ -66,54 +66,54 @@ import { PhotoUploadComponent } from '../../../shared/components/photo-upload/ph
 
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                <label class="block text-xs font-semibold text-warm-500 uppercase tracking-wide mb-1.5">
                   Poids (kg) *
                 </label>
                 <input type="number" formControlName="weight" step="0.01" min="0"
-                       class="w-full px-3.5 py-2.5 text-sm bg-white border border-gray-200 rounded-lg outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all"
+                       class="w-full px-3.5 py-2.5 text-sm bg-white border border-warm-300 rounded-xl outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 transition-all text-warm-900 placeholder-warm-400"
                        placeholder="1.5">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                <label class="block text-xs font-semibold text-warm-500 uppercase tracking-wide mb-1.5">
                   Taille (cm) *
                 </label>
                 <input type="number" formControlName="length" step="0.1" min="0"
-                       class="w-full px-3.5 py-2.5 text-sm bg-white border border-gray-200 rounded-lg outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all"
+                       class="w-full px-3.5 py-2.5 text-sm bg-white border border-warm-300 rounded-xl outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 transition-all text-warm-900 placeholder-warm-400"
                        placeholder="45">
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+              <label class="block text-xs font-semibold text-warm-500 uppercase tracking-wide mb-1.5">
                 Date et heure *
               </label>
               <input type="datetime-local" formControlName="caughtAt"
-                     class="w-full px-3.5 py-2.5 text-sm bg-white border border-gray-200 rounded-lg outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all">
+                     class="w-full px-3.5 py-2.5 text-sm bg-white border border-warm-300 rounded-xl outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 transition-all text-warm-900">
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+              <label class="block text-xs font-semibold text-warm-500 uppercase tracking-wide mb-1.5">
                 Note
               </label>
               <textarea formControlName="note" rows="3"
-                        class="w-full px-3.5 py-2.5 text-sm bg-white border border-gray-200 rounded-lg outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all resize-none"
+                        class="w-full px-3.5 py-2.5 text-sm bg-white border border-warm-300 rounded-xl outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 transition-all resize-none text-warm-900 placeholder-warm-400"
                         placeholder="Super session, eau claire..."></textarea>
             </div>
           </div>
 
           @if (error) {
-            <div class="mt-5 p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600">
+            <div class="mt-5 p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600">
               {{ error }}
             </div>
           }
 
-          <div class="flex gap-3 mt-6 pt-6 border-t border-gray-100">
+          <div class="flex gap-3 mt-6 pt-6 border-t border-warm-100">
             <a routerLink="/captures"
-               class="flex-1 text-center py-2.5 text-sm font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all">
+               class="flex-1 text-center py-2.5 text-sm font-medium text-warm-600 bg-warm-50 border border-warm-200 rounded-xl hover:bg-warm-100 transition-all">
               Annuler
             </a>
             <button type="submit" [disabled]="loading || form.invalid"
-                    class="flex-1 py-2.5 text-sm font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                    class="flex-1 py-2.5 text-sm font-semibold text-white bg-forest-600 rounded-xl hover:bg-forest-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
               @if (loading) {
                 <span class="flex items-center justify-center gap-2">
                   <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
