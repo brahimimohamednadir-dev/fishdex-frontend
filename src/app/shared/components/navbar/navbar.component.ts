@@ -1,9 +1,10 @@
-import { Component, inject, signal, HostListener, computed } from '@angular/core';
+import { Component, inject, signal, HostListener, computed, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 const GRACE_DAYS = 7;
 
@@ -53,12 +54,30 @@ const GRACE_DAYS = 7;
                class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
               Badges
             </a>
+            <a routerLink="/groups" routerLinkActive="!text-warm-900 !bg-warm-200"
+               class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
+              Groupes
+            </a>
           }
         </nav>
 
         <!-- Actions desktop -->
         <div class="hidden md:flex items-center gap-2">
           @if (user(); as u) {
+            <!-- Notification bell -->
+            <a routerLink="/notifications"
+               class="relative flex items-center justify-center w-9 h-9 rounded-lg text-warm-600 hover:bg-warm-200 transition-all">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              @if (notifService.unreadCount() > 0) {
+                <span class="absolute -top-0.5 -right-0.5 flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">
+                  {{ notifService.unreadCount() > 9 ? '9+' : notifService.unreadCount() }}
+                </span>
+              }
+            </a>
+
             <a routerLink="/profile"
                class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-warm-700 hover:bg-warm-200 transition-all">
               <span class="w-6 h-6 rounded-full bg-forest-600 text-white text-xs flex items-center justify-center font-semibold">
@@ -117,6 +136,21 @@ const GRACE_DAYS = 7;
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
               🏆 Badges
             </a>
+            <a routerLink="/groups" (click)="closeMenu()"
+               routerLinkActive="!bg-warm-200 !text-warm-900"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
+              🏕️ Groupes
+            </a>
+            <a routerLink="/notifications" (click)="closeMenu()"
+               routerLinkActive="!bg-warm-200 !text-warm-900"
+               class="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
+              <span class="flex items-center gap-3">🔔 Notifications</span>
+              @if (notifService.unreadCount() > 0) {
+                <span class="text-xs font-bold text-white bg-red-500 rounded-full px-1.5 py-0.5">
+                  {{ notifService.unreadCount() }}
+                </span>
+              }
+            </a>
             <a routerLink="/profile" (click)="closeMenu()"
                routerLinkActive="!bg-warm-200 !text-warm-900"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
@@ -148,10 +182,11 @@ const GRACE_DAYS = 7;
     </header>
   `,
 })
-export class NavbarComponent {
-  private auth   = inject(AuthService);
-  private router = inject(Router);
-  private toast  = inject(ToastService);
+export class NavbarComponent implements OnInit {
+  private auth    = inject(AuthService);
+  private router  = inject(Router);
+  private toast   = inject(ToastService);
+  notifService    = inject(NotificationService);
 
   user     = toSignal(this.auth.currentUser$, { initialValue: this.auth.currentUser$.getValue() });
   menuOpen = signal(false);
@@ -160,7 +195,6 @@ export class NavbarComponent {
   showEmailBanner = computed(() => {
     const u = this.user();
     if (!u || u.emailVerified || this.bannerDismissed()) return false;
-    // Grace period : afficher seulement les 7 premiers jours
     const created = new Date(u.createdAt).getTime();
     const daysOld = (Date.now() - created) / (1000 * 60 * 60 * 24);
     return daysOld <= GRACE_DAYS;
@@ -173,6 +207,17 @@ export class NavbarComponent {
     const daysOld = (Date.now() - created) / (1000 * 60 * 60 * 24);
     return Math.max(0, Math.ceil(GRACE_DAYS - daysOld));
   });
+
+  ngOnInit(): void {
+    if (this.user()) {
+      this.notifService.startPolling();
+    }
+    // Start polling whenever user logs in
+    this.auth.currentUser$.subscribe(u => {
+      if (u) this.notifService.startPolling();
+      else this.notifService.stopPolling();
+    });
+  }
 
   dismissBanner(): void { this.bannerDismissed.set(true); }
 
@@ -189,6 +234,7 @@ export class NavbarComponent {
 
   logout(): void {
     this.closeMenu();
+    this.notifService.stopPolling();
     this.auth.logout();
     this.router.navigate(['/login']);
   }

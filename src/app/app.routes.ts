@@ -66,11 +66,57 @@ export const routes: Routes = [
     loadComponent: () => import('./features/captures/capture-detail/capture-detail.component').then(m => m.CaptureDetailComponent),
     canActivate: [authGuard],
   },
+
+  // ─── Groupes ──────────────────────────────────────────────────────────────
+  {
+    path: 'groups',
+    loadComponent: () => import('./features/groups/groups-dashboard/groups-dashboard.component').then(m => m.GroupsDashboardComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'groups/discover',
+    loadComponent: () => import('./features/groups/groups-discover/groups-discover.component').then(m => m.GroupsDiscoverComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'groups/new',
+    loadComponent: () => import('./features/groups/group-new/group-new.component').then(m => m.GroupNewComponent),
+    canActivate: [authGuard],
+  },
   {
     path: 'groups/:id',
     loadComponent: () => import('./features/groups/group-detail/group-detail.component').then(m => m.GroupDetailComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'groups/:id/members',
+    loadComponent: () => import('./features/groups/group-members/group-members.component').then(m => m.GroupMembersComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'groups/:id/admin',
+    loadComponent: () => import('./features/groups/group-admin/group-admin.component').then(m => m.GroupAdminComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'groups/:id/admin/requests',
+    loadComponent: () => import('./features/groups/group-requests/group-requests.component').then(m => m.GroupRequestsComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'groups/:id/admin/reports',
+    loadComponent: () => import('./features/groups/group-reports/group-reports.component').then(m => m.GroupReportsComponent),
+    canActivate: [authGuard],
+  },
+
+  // ─── Notifications ────────────────────────────────────────────────────────
+  {
+    path: 'notifications',
+    loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent),
+    canActivate: [authGuard],
+  },
+
+  // ─── Profile / Badges ─────────────────────────────────────────────────────
   {
     path: 'profile',
     loadComponent: () => import('./features/profile/profile/profile.component').then(m => m.ProfileComponent),
