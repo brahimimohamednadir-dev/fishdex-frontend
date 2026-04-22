@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -150,7 +151,7 @@ import { ToastService } from '../../../core/services/toast.service';
     </div>
   `,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   private fb    = inject(FormBuilder);
   private auth  = inject(AuthService);
   private router = inject(Router);
@@ -160,7 +161,7 @@ export class LoginComponent implements OnInit {
   showPassword = signal(false);
   loading = false; error = ''; locked = false; lockTimer = '';
   private attempts = 0;
-  private lockInterval: ReturnType<typeof setInterval> | null = null;
+  private lockSub: Subscription | null = null;
   private returnUrl = '/captures';
 
   form = this.fb.group({
@@ -215,14 +216,15 @@ export class LoginComponent implements OnInit {
     this.locked = true; this.error = '';
     let remaining = seconds;
     this.updateLockLabel(remaining);
-    this.lockInterval = setInterval(() => {
+    this.lockSub?.unsubscribe();
+    this.lockSub = interval(1000).subscribe(() => {
       remaining--;
       this.updateLockLabel(remaining);
       if (remaining <= 0) {
         this.locked = false; this.attempts = 0;
-        if (this.lockInterval) clearInterval(this.lockInterval);
+        this.lockSub?.unsubscribe();
       }
-    }, 1000);
+    });
   }
 
   private updateLockLabel(s: number): void {
@@ -230,4 +232,6 @@ export class LoginComponent implements OnInit {
     const sec = s % 60;
     this.lockTimer = `${m}:${sec.toString().padStart(2, '0')}`;
   }
+
+  ngOnDestroy(): void { this.lockSub?.unsubscribe(); }
 }

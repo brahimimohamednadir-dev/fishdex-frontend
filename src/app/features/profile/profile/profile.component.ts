@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { timer } from 'rxjs';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
@@ -146,7 +147,7 @@ export class ProfileComponent implements OnInit {
     if (this.form.invalid || !this.user) return;
     this.saving = true; this.saveError = ''; this.saveSuccess = false;
     this.userService.updateMe(this.form.value.username!).subscribe({
-      next: res => { this.user = res.data; this.authService.currentUser$.next(res.data); this.saveSuccess = true; this.saving = false; this.toast.success('Pseudo mis à jour !'); setTimeout(() => (this.saveSuccess = false), 3000); },
+      next: res => { this.user = res.data; this.authService.currentUser$.next(res.data); this.saveSuccess = true; this.saving = false; this.toast.success('Pseudo mis à jour !'); timer(3000).subscribe(() => (this.saveSuccess = false)); },
       error: err => { this.saveError = err.error?.message ?? 'Erreur'; this.toast.error(this.saveError); this.saving = false; },
     });
   }

@@ -1,7 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-verify-email',
@@ -90,7 +91,7 @@ import { ToastService } from '../../../core/services/toast.service';
     </div>
   `,
 })
-export class VerifyEmailComponent implements OnInit {
+export class VerifyEmailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private auth  = inject(AuthService);
   private toast = inject(ToastService);
@@ -104,7 +105,7 @@ export class VerifyEmailComponent implements OnInit {
   resentSuccess = signal(false);
   resendCooldown = signal(0);
 
-  private cooldownInterval: ReturnType<typeof setInterval> | null = null;
+  private cooldownSub: Subscription | null = null;
 
   ngOnInit(): void {
     this.email = this.route.snapshot.queryParamMap.get('email') ?? '';
@@ -139,11 +140,14 @@ export class VerifyEmailComponent implements OnInit {
 
   private startCooldown(seconds: number): void {
     this.resendCooldown.set(seconds);
-    this.cooldownInterval = setInterval(() => {
+    this.cooldownSub?.unsubscribe();
+    this.cooldownSub = interval(1000).subscribe(() => {
       this.resendCooldown.update(v => {
-        if (v <= 1) { clearInterval(this.cooldownInterval!); return 0; }
+        if (v <= 1) { this.cooldownSub?.unsubscribe(); return 0; }
         return v - 1;
       });
-    }, 1000);
+    });
   }
+
+  ngOnDestroy(): void { this.cooldownSub?.unsubscribe(); }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { interval } from 'rxjs';
 import { CaptureService } from '../../../core/services/capture.service';
 import { SpeciesService } from '../../../core/services/species.service';
 import { Species } from '../../../core/models/species.model';
@@ -209,9 +210,9 @@ export class CaptureNewComponent implements OnInit {
   }
 
   private simulateProgress(): void {
-    const interval = setInterval(() => {
+    const sub = interval(200).subscribe(() => {
       if (this.uploadProgress < 90) this.uploadProgress += 15;
-      else clearInterval(interval);
-    }, 200);
+      else sub.unsubscribe();
+    });
   }
 }

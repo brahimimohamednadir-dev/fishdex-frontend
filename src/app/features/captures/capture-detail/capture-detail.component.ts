@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { interval, timer } from 'rxjs';
 import { CaptureService } from '../../../core/services/capture.service';
 import { Capture } from '../../../core/models/capture.model';
 import { ToastService } from '../../../core/services/toast.service';
@@ -127,19 +128,19 @@ export class CaptureDetailComponent implements OnInit {
   uploadPhoto(file: File): void {
     if (!this.capture) return;
     this.uploadingPhoto = true; this.uploadProgress = 0;
-    const interval = setInterval(() => {
+    const progressSub = interval(180).subscribe(() => {
       if (this.uploadProgress < 85) this.uploadProgress += 12;
-      else clearInterval(interval);
-    }, 180);
+      else progressSub.unsubscribe();
+    });
     this.captureService.uploadPhoto(this.capture.id, file).subscribe({
       next: res => {
-        clearInterval(interval); this.uploadProgress = 100;
+        progressSub.unsubscribe(); this.uploadProgress = 100;
         this.capture = res.data;
         this.toast.success('Photo mise à jour !');
-        setTimeout(() => { this.uploadingPhoto = false; this.uploadProgress = 0; }, 500);
+        timer(500).subscribe(() => { this.uploadingPhoto = false; this.uploadProgress = 0; });
       },
       error: () => {
-        clearInterval(interval); this.uploadingPhoto = false; this.uploadProgress = 0;
+        progressSub.unsubscribe(); this.uploadingPhoto = false; this.uploadProgress = 0;
         this.toast.error("Échec de l'upload photo.");
       },
     });
