@@ -10,6 +10,8 @@ import { TotpSetupResponse } from '../models/session.model';
 export interface LoginResponse {
   token?:              string;
   tokenType?:          string;
+  refreshToken?:       string;
+  expiresIn?:          number;
   user?:               User;
   requiresTwoFactor?:  boolean;
   tempToken?:          string;
@@ -39,7 +41,7 @@ export class AuthService {
           // Stocker le token temporaire pour la page /2fa
           this.setStorage(this.TEMP_2FA_KEY, res.data.tempToken);
         } else if (res.data.token && res.data.user) {
-          this.storeSession(res.data.token, res.data.user, rememberMe);
+          this.storeSession(res.data.token, res.data.user, rememberMe, res.data.refreshToken);
         }
       }));
   }
@@ -79,7 +81,7 @@ export class AuthService {
       .pipe(tap(res => {
         if (res.success && res.data?.token && res.data?.user) {
           this.removeStorage(this.TEMP_2FA_KEY);
-          this.storeSession(res.data.token, res.data.user, false);
+          this.storeSession(res.data.token, res.data.user, false, res.data.refreshToken);
         }
       }));
   }
@@ -116,6 +118,19 @@ export class AuthService {
     return this.http.post<ApiResponse<void>>(`${this.api}/reset-password`, { token, password });
   }
 
+  // ─── Refresh token ────────────────────────────────────────────────────
+
+  refreshAccessToken(): Observable<ApiResponse<{ token: string; expiresIn: number }>> {
+    const refreshToken = this.getStorage(this.REFRESH_KEY);
+    return this.http
+      .post<ApiResponse<{ token: string; expiresIn: number }>>(`${this.api}/refresh`, { refreshToken })
+      .pipe(tap(res => {
+        if (res.success && res.data?.token) {
+          this.setStorage(this.TOKEN_KEY, res.data.token);
+        }
+      }));
+  }
+
   // ─── Token / Session ──────────────────────────────────────────────────────
 
   isAuthenticated(): boolean {
@@ -126,6 +141,10 @@ export class AuthService {
     return this.getStorage(this.TOKEN_KEY);
   }
 
+  getRefreshToken(): string | null {
+    return this.getStorage(this.REFRESH_KEY);
+  }
+
   updateCurrentUser(user: User): void {
     this.setStorage(this.USER_KEY, JSON.stringify(user));
     this.currentUser$.next(user);
@@ -133,12 +152,11 @@ export class AuthService {
 
   // ─── Private ──────────────────────────────────────────────────────────────
 
-  private storeSession(token: string, user: User, rememberMe: boolean): void {
+  private storeSession(token: string, user: User, rememberMe: boolean, refreshToken?: string): void {
     this.setStorage(this.TOKEN_KEY, token);
     this.setStorage(this.USER_KEY, JSON.stringify(user));
-    if (rememberMe) {
-      // Le refresh token est géré par le backend en httpOnly cookie ou stocké ici
-      this.setStorage(this.REFRESH_KEY, 'true');
+    if (refreshToken) {
+      this.setStorage(this.REFRESH_KEY, refreshToken);
     }
     this.currentUser$.next(user);
   }

@@ -180,7 +180,7 @@ const MONTHS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','N
                       {{ difficultyLabel(s.difficulty) }}
                     </span>
                   }
-                  @if (s.waterTypes?.length > 0) {
+                  @if ((s.waterTypes?.length ?? 0) > 0) {
                     <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
                       {{ waterLabel(s.waterTypes[0]) }}
                     </span>
