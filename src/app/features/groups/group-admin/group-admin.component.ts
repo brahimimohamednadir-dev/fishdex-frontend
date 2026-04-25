@@ -93,9 +93,16 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
           <div class="mt-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
             <h3 class="text-sm font-bold text-red-700 mb-2">Zone dangereuse</h3>
             <p class="text-xs text-red-500 mb-3">La suppression du groupe est irréversible.</p>
-            <button (click)="deleteGroup()"
-                    class="px-4 py-2 text-xs font-semibold text-white bg-red-500 rounded-xl hover:bg-red-600 transition-all">
-              Supprimer le groupe
+            <button (click)="deleteGroup()" [disabled]="deleting()"
+                    class="px-4 py-2 text-xs font-semibold text-white bg-red-500 rounded-xl hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+              @if (deleting()) {
+                <span class="flex items-center gap-2">
+                  <span class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  Suppression...
+                </span>
+              } @else {
+                Supprimer le groupe
+              }
             </button>
           </div>
         }
@@ -111,6 +118,7 @@ export class GroupAdminComponent implements OnInit {
   groupId      = 0;
   group        = signal<Group | null>(null);
   loading      = signal(true);
+  deleting     = signal(false);
   pendingCount = signal(0);
 
   ngOnInit(): void {
@@ -128,12 +136,16 @@ export class GroupAdminComponent implements OnInit {
   deleteGroup(): void {
     const name = this.group()?.name;
     if (!confirm(`Supprimer définitivement "${name}" ? Cette action est irréversible.`)) return;
+    this.deleting.set(true);
     this.groupService.deleteGroup(this.groupId).subscribe({
       next: () => {
         this.toast.success('Groupe supprimé');
         window.location.href = '/groups';
       },
-      error: err => this.toast.error(err.error?.message ?? 'Impossible de supprimer'),
+      error: err => {
+        this.deleting.set(false);
+        this.toast.error(err.error?.message ?? 'Impossible de supprimer');
+      },
     });
   }
 }

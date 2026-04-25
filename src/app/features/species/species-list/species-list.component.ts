@@ -181,7 +181,7 @@ const MONTHS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','N
                       {{ difficultyLabel(s.difficulty) }}
                     </span>
                   }
-                  @if ((s.waterTypes?.length ?? 0) > 0) {
+                  @if ((s.waterTypes?.length ?? 0) > 0 && s.waterTypes) {
                     <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
                       {{ waterLabel(s.waterTypes[0]) }}
                     </span>
@@ -270,7 +270,7 @@ export class SpeciesListComponent implements OnInit {
 
   onSearchChange(query: string): void {
     // Debounce via un timeout simple — la requête précédente est annulée par switchMap
-    clearTimeout(this._searchTimer);
+    if (this._searchTimer) clearTimeout(this._searchTimer);
     this._searchTimer = setTimeout(() => {
       this.activeFilters = { ...this.activeFilters, search: query.trim() || undefined };
       this._emit(0);

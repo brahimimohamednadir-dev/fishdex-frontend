@@ -74,9 +74,9 @@ const CATEGORY_LABELS: Record<string, string> = {
               <!-- Membership button -->
               <div class="shrink-0 flex flex-col gap-2">
                 @if (group()!.myStatus === 'MEMBER') {
-                  <button (click)="leaveGroup()"
-                          class="px-4 py-2 text-xs font-semibold text-warm-600 bg-warm-50 border border-warm-300 rounded-xl hover:bg-warm-100 transition-all">
-                    Quitter
+                  <button (click)="leaveGroup()" [disabled]="actionLoading()"
+                          class="px-4 py-2 text-xs font-semibold text-warm-600 bg-warm-50 border border-warm-300 rounded-xl hover:bg-warm-100 disabled:opacity-50 transition-all">
+                    @if (actionLoading()) { Départ... } @else { Quitter }
                   </button>
                 } @else if (group()!.myStatus === 'PENDING') {
                   <span class="px-4 py-2 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded-xl">
@@ -258,8 +258,15 @@ const CATEGORY_LABELS: Record<string, string> = {
                           class="w-full px-3 py-2 border border-warm-300 rounded-xl text-sm focus:outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 resize-none"
                         ></textarea>
                         <div class="flex gap-2 mt-2">
-                          <button (click)="cancelEdit()" class="px-3 py-1.5 text-xs text-warm-600 bg-warm-100 rounded-lg hover:bg-warm-200 transition-all">Annuler</button>
-                          <button (click)="saveEdit(post)" class="px-3 py-1.5 text-xs text-white bg-forest-600 rounded-lg hover:bg-forest-700 transition-all">Sauvegarder</button>
+                          <button (click)="cancelEdit()" [disabled]="savingEdit()"
+                                  class="px-3 py-1.5 text-xs text-warm-600 bg-warm-100 rounded-lg hover:bg-warm-200 disabled:opacity-50 transition-all">Annuler</button>
+                          <button (click)="saveEdit(post)" [disabled]="savingEdit() || !editText.trim()"
+                                  class="px-3 py-1.5 text-xs text-white bg-forest-600 rounded-lg hover:bg-forest-700 disabled:opacity-50 transition-all flex items-center gap-1.5">
+                            @if (savingEdit()) {
+                              <span class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                            }
+                            Sauvegarder
+                          </button>
                         </div>
                       </div>
                     } @else {
@@ -408,7 +415,8 @@ export class GroupDetailComponent implements OnInit, OnDestroy {
   rulesOpen     = signal(false);
 
   editingPostId = signal<number | null>(null);
-  editText = '';
+  editText      = '';
+  savingEdit    = signal(false);
 
   openPostMenu      = signal<number | null>(null);
   openReactionPicker = signal<number | null>(null);
@@ -510,13 +518,18 @@ export class GroupDetailComponent implements OnInit, OnDestroy {
   }
 
   leaveGroup(): void {
+    if (this.actionLoading()) return;
     if (!confirm('Quitter ce groupe ?')) return;
+    this.actionLoading.set(true);
     this.groupService.leaveGroup(this.groupId).subscribe({
       next: () => {
         this.toast.info('Tu as quitté le groupe');
         this.router.navigate(['/groups']);
       },
-      error: err => this.toast.error(err.error?.message ?? 'Impossible de quitter'),
+      error: err => {
+        this.actionLoading.set(false);
+        this.toast.error(err.error?.message ?? 'Impossible de quitter');
+      },
     });
   }
 
@@ -552,13 +565,18 @@ export class GroupDetailComponent implements OnInit, OnDestroy {
   cancelEdit(): void { this.editingPostId.set(null); this.editText = ''; }
 
   saveEdit(post: Post): void {
-    if (!this.editText.trim()) return;
+    if (!this.editText.trim() || this.savingEdit()) return;
+    this.savingEdit.set(true);
     this.postService.updatePost(this.groupId, post.id, this.editText.trim()).subscribe({
       next: res => {
         this.posts.update(prev => prev.map(p => p.id === post.id ? res.data : p));
+        this.savingEdit.set(false);
         this.cancelEdit();
       },
-      error: err => this.toast.error(err.error?.message ?? 'Impossible de modifier'),
+      error: err => {
+        this.savingEdit.set(false);
+        this.toast.error(err.error?.message ?? 'Impossible de modifier');
+      },
     });
   }
 
