@@ -1,5 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BehaviorSubject, switchMap } from 'rxjs';
 import { CaptureService } from '../../../core/services/capture.service';
 import { Capture, Page } from '../../../core/models/capture.model';
 import { CaptureCardComponent } from '../../../shared/components/capture-card/capture-card.component';
@@ -51,12 +53,12 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 
         @if ((page?.totalPages ?? 0) > 1) {
           <div class="flex justify-center items-center gap-2 mt-10">
-            <button (click)="loadPage(currentPage - 1)" [disabled]="currentPage === 0"
+            <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0"
                     class="px-4 py-2 text-sm font-medium text-warm-600 bg-white border border-warm-200 rounded-xl hover:bg-warm-50 disabled:opacity-30 transition-all">
               ← Précédent
             </button>
             <span class="px-4 py-2 text-sm text-warm-500">{{ currentPage + 1 }} / {{ page?.totalPages }}</span>
-            <button (click)="loadPage(currentPage + 1)" [disabled]="currentPage >= (page?.totalPages ?? 1) - 1"
+            <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage >= (page?.totalPages ?? 1) - 1"
                     class="px-4 py-2 text-sm font-medium text-warm-600 bg-white border border-warm-200 rounded-xl hover:bg-warm-50 disabled:opacity-30 transition-all">
               Suivant →
             </button>
@@ -68,17 +70,43 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 })
 export class CaptureListComponent implements OnInit {
   private captureService = inject(CaptureService);
+
   captures: Capture[] = [];
   page: Page<Capture> | null = null;
-  currentPage = 0; loading = true; error = '';
+  currentPage = 0;
+  loading = true;
+  error = '';
 
-  ngOnInit(): void { this.loadPage(0); }
+  // switchMap annule la requête précédente si l'utilisateur change de page rapidement
+  private readonly page$ = new BehaviorSubject<number>(0);
 
-  loadPage(p: number): void {
-    this.loading = true; this.error = '';
-    this.captureService.getMyCaptures(p, 12).subscribe({
-      next: res => { this.page = res.data; this.captures = res.data.content; this.currentPage = p; this.loading = false; },
-      error: err => { this.error = err.error?.message ?? 'Erreur de chargement'; this.loading = false; },
+  constructor() {
+    this.page$.pipe(
+      switchMap(p => {
+        this.loading = true;
+        this.error   = '';
+        return this.captureService.getMyCaptures(p, 12);
+      }),
+      takeUntilDestroyed(),
+    ).subscribe({
+      next: res => {
+        this.page        = res.data;
+        this.captures    = res.data?.content ?? [];
+        this.currentPage = this.page$.getValue();
+        this.loading     = false;
+      },
+      error: err => {
+        this.error   = err.error?.message ?? 'Erreur de chargement';
+        this.loading = false;
+      },
     });
+  }
+
+  ngOnInit(): void {
+    // La valeur initiale (0) est émise automatiquement par BehaviorSubject dans le constructeur
+  }
+
+  goToPage(p: number): void {
+    this.page$.next(p);
   }
 }

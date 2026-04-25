@@ -1,7 +1,8 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, switchMap, debounceTime, distinctUntilChanged, startWith, BehaviorSubject, combineLatest } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { SpeciesService, SpeciesFilters } from '../../../core/services/species.service';
 import { Species, WaterType, DifficultyLevel } from '../../../core/models/species.model';
@@ -43,7 +44,7 @@ const MONTHS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','N
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
         </span>
-        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()"
+        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)"
                class="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-warm-300 rounded-xl outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 transition-all text-warm-900 placeholder-warm-400"
                placeholder="Brochet, Carpe, Truite fario...">
       </div>
@@ -194,12 +195,12 @@ const MONTHS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','N
         <!-- Pagination -->
         @if ((page?.totalPages ?? 0) > 1) {
           <div class="flex justify-center items-center gap-2 mt-10">
-            <button (click)="loadPage(currentPage - 1)" [disabled]="currentPage === 0"
+            <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0"
                     class="px-4 py-2 text-sm font-medium text-warm-600 bg-white border border-warm-200 rounded-xl hover:bg-warm-50 disabled:opacity-30 transition-all">
               ← Précédent
             </button>
             <span class="px-3 text-sm text-warm-500">{{ currentPage + 1 }} / {{ page?.totalPages }}</span>
-            <button (click)="loadPage(currentPage + 1)" [disabled]="currentPage >= (page?.totalPages ?? 1) - 1"
+            <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage >= (page?.totalPages ?? 1) - 1"
                     class="px-4 py-2 text-sm font-medium text-warm-600 bg-white border border-warm-200 rounded-xl hover:bg-warm-50 disabled:opacity-30 transition-all">
               Suivant →
             </button>
@@ -237,49 +238,23 @@ export class SpeciesListComponent implements OnInit {
   ];
   monthOptions = MONTHS.map((label, i) => ({ value: i + 1, label }));
 
-  private searchTimeout: ReturnType<typeof setTimeout> | null = null;
+  // ── Flux réactif : annule la requête précédente à chaque nouveau filtre ──────
+  private readonly filters$ = new BehaviorSubject<SpeciesFilters & { page: number }>({ sort: 'name', page: 0 });
 
-  ngOnInit(): void { this.loadPage(0); }
-
-  onSearchChange(): void {
-    if (this.searchTimeout) clearTimeout(this.searchTimeout);
-    this.searchTimeout = setTimeout(() => {
-      this.activeFilters.search = this.searchQuery.trim() || undefined;
-      this.loadPage(0);
-    }, 350);
-  }
-
-  toggleFilter(key: 'waterType' | 'difficulty', value: string): void {
-    (this.activeFilters as any)[key] = (this.activeFilters as any)[key] === value ? undefined : value;
-    this.loadPage(0);
-  }
-
-  toggleCaughtOnly(): void {
-    this.activeFilters.caughtOnly = !this.activeFilters.caughtOnly;
-    this.loadPage(0);
-  }
-
-  applyFilters(): void { this.loadPage(0); }
-
-  clearFilters(): void {
-    this.activeFilters = { sort: 'name' };
-    this.searchQuery   = '';
-    this.loadPage(0);
-  }
-
-  hasActiveFilters(): boolean {
-    return !!(this.activeFilters.waterType || this.activeFilters.difficulty ||
-              this.activeFilters.season    || this.activeFilters.caughtOnly ||
-              this.searchQuery.trim());
-  }
-
-  loadPage(p: number): void {
-    this.loading = true;
-    this.speciesService.getSpecies({ ...this.activeFilters, page: p, size: 20 }).subscribe({
+  constructor() {
+    // switchMap annule la requête HTTP en cours si de nouveaux filtres arrivent
+    this.filters$.pipe(
+      switchMap(filters => {
+        this.loading = true;
+        this.error   = '';
+        return this.speciesService.getSpecies(filters);
+      }),
+      takeUntilDestroyed(),
+    ).subscribe({
       next: res => {
         this.page        = res.data;
-        this.species     = res.data.content;
-        this.currentPage = p;
+        this.species     = res.data?.content ?? [];
+        this.currentPage = this.filters$.getValue().page ?? 0;
         this.loading     = false;
       },
       error: err => {
@@ -289,7 +264,51 @@ export class SpeciesListComponent implements OnInit {
     });
   }
 
+  ngOnInit(): void {
+    // Le BehaviorSubject émet automatiquement la valeur initiale dans le constructeur
+  }
+
+  onSearchChange(query: string): void {
+    // Debounce via un timeout simple — la requête précédente est annulée par switchMap
+    clearTimeout(this._searchTimer);
+    this._searchTimer = setTimeout(() => {
+      this.activeFilters = { ...this.activeFilters, search: query.trim() || undefined };
+      this._emit(0);
+    }, 350);
+  }
+  private _searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+  toggleFilter(key: 'waterType' | 'difficulty', value: string): void {
+    (this.activeFilters as any)[key] = (this.activeFilters as any)[key] === value ? undefined : value;
+    this._emit(0);
+  }
+
+  toggleCaughtOnly(): void {
+    this.activeFilters = { ...this.activeFilters, caughtOnly: !this.activeFilters.caughtOnly };
+    this._emit(0);
+  }
+
+  applyFilters(): void { this._emit(0); }
+
+  clearFilters(): void {
+    this.activeFilters = { sort: 'name' };
+    this.searchQuery   = '';
+    this._emit(0);
+  }
+
+  goToPage(p: number): void { this._emit(p); }
+
+  hasActiveFilters(): boolean {
+    return !!(this.activeFilters.waterType || this.activeFilters.difficulty ||
+              this.activeFilters.season    || this.activeFilters.caughtOnly ||
+              this.searchQuery.trim());
+  }
+
   difficultyLabel(d: string): string { return (DIFFICULTY_LABELS as any)[d]?.label ?? d; }
   difficultyClass(d: string): string { return (DIFFICULTY_LABELS as any)[d]?.color ?? 'bg-warm-100 text-warm-600'; }
   waterLabel(w: string): string      { return (WATER_LABELS as any)[w] ?? w; }
+
+  private _emit(page: number): void {
+    this.filters$.next({ ...this.activeFilters, page, size: 20 });
+  }
 }
