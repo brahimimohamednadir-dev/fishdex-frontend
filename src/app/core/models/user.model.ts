@@ -4,6 +4,7 @@ export interface User {
   id: number;
   email: string;
   username: string;
+  userTag: string;
   isPremium: boolean;
   captureCount: number;
   emailVerified: boolean;

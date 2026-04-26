@@ -1,6 +1,7 @@
 export interface Friend {
   userId:              number;
   username:            string;
+  userTag:             string;
   captureCount:        number;
   activeToday:         boolean;
   lastCaptureId:       number | null;

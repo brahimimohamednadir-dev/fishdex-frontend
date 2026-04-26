@@ -5,6 +5,7 @@ import { FriendshipStatus } from './friend.model';
 export interface PublicProfile {
   userId:               number;
   username:             string;
+  userTag:              string;
   memberSince:          string;
   totalCaptures:        number;
   distinctSpecies:      number;

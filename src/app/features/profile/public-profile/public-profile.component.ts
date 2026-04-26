@@ -34,10 +34,10 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
             </div>
 
             <div class="flex-1 min-w-0">
-              <h1 class="text-xl font-bold text-warm-900">{{ profile()!.username }}</h1>
-              <p class="text-sm text-warm-400 mt-0.5">
-                Pêcheur depuis {{ memberSince() }}
-              </p>
+              <h1 class="text-xl font-bold text-warm-900">
+                {{ profile()!.username }}<span class="text-warm-300 font-normal text-base">#{{ profile()!.userTag }}</span>
+              </h1>
+              <p class="text-sm text-warm-400 mt-0.5">Pêcheur depuis {{ memberSince() }}</p>
 
               <!-- Stats rapides -->
               <div class="flex gap-5 mt-3">

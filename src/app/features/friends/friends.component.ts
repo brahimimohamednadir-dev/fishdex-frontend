@@ -35,7 +35,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
         </svg>
         <input [(ngModel)]="searchQuery"
                (ngModelChange)="onSearch($event)"
-               placeholder="Rechercher un pêcheur..."
+               placeholder="Pseudo ou #12345..."
                class="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-warm-300 rounded-xl outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 transition-all text-warm-900 placeholder-warm-400 shadow-sm">
         @if (searchQuery) {
           <button (click)="clearSearch()"
@@ -44,6 +44,9 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
           </button>
         }
       </div>
+      <p class="text-xs text-warm-400 mt-1.5 px-1">
+        Tape un pseudo ou utilise le tag exact : <span class="font-mono text-warm-500">pseudo#12345</span>
+      </p>
 
       <!-- ── Résultats recherche ───────────────────────────────────────── -->
       @if (searchQuery.length >= 2) {
@@ -67,7 +70,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
 
                   <!-- Info -->
                   <div class="flex-1 min-w-0">
-                    <a [routerLink]="['/u', f.username]" class="text-sm font-semibold text-warm-900 hover:text-forest-700 transition-colors">{{ f.username }}</a>
+                    <a [routerLink]="['/u', f.username]" class="text-sm font-semibold text-warm-900 hover:text-forest-700 transition-colors">{{ f.username }}<span class="text-warm-300 font-normal">#{{ f.userTag }}</span></a>
                     <p class="text-xs text-warm-400">{{ f.captureCount }} capture{{ f.captureCount !== 1 ? 's' : '' }}</p>
                   </div>
 
@@ -166,7 +169,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
                   <!-- Info -->
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2">
-                      <a [routerLink]="['/u', f.username]" class="text-sm font-semibold text-warm-900 truncate hover:text-forest-700 transition-colors">{{ f.username }}</a>
+                      <a [routerLink]="['/u', f.username]" class="text-sm font-semibold text-warm-900 truncate hover:text-forest-700 transition-colors">{{ f.username }}<span class="text-warm-300 font-normal">#{{ f.userTag }}</span></a>
                       @if (f.activeToday) {
                         <span class="text-xs text-green-600 font-medium flex-shrink-0">actif aujourd'hui</span>
                       }

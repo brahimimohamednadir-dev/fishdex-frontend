@@ -27,8 +27,11 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
               {{ user.username.charAt(0).toUpperCase() }}
             </div>
             <div>
-              <p class="font-bold text-warm-900">{{ user.username }}</p>
-              <p class="text-sm text-warm-500">{{ user.email }}</p>
+              <p class="font-bold text-warm-900">
+                {{ user.username }}<span class="text-warm-300 font-normal text-sm">#{{ user.userTag }}</span>
+              </p>
+              <p class="text-xs text-warm-400 font-mono mt-0.5">Mon tag · donne ce code à tes amis 🎣</p>
+              <p class="text-sm text-warm-500 mt-1">{{ user.email }}</p>
               @if (user.isPremium) {
                 <span class="inline-block mt-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700">
                   ⭐ Premium

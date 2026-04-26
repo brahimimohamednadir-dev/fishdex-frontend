@@ -101,6 +101,7 @@ export class ProfileSessionsComponent implements OnInit {
   }
 
   revoke(id: number): void {
+    if (this.revoking) return;
     this.revoking = true;
     this.sessionService.revokeSession(id).subscribe({
       next: () => {
@@ -113,6 +114,7 @@ export class ProfileSessionsComponent implements OnInit {
   }
 
   revokeAll(): void {
+    if (this.revoking) return;
     this.revoking = true;
     this.sessionService.revokeAllOthers().subscribe({
       next: () => {
