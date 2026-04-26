@@ -67,7 +67,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
 
                   <!-- Info -->
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-warm-900">{{ f.username }}</p>
+                    <a [routerLink]="['/u', f.username]" class="text-sm font-semibold text-warm-900 hover:text-forest-700 transition-colors">{{ f.username }}</a>
                     <p class="text-xs text-warm-400">{{ f.captureCount }} capture{{ f.captureCount !== 1 ? 's' : '' }}</p>
                   </div>
 
@@ -166,7 +166,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
                   <!-- Info -->
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2">
-                      <p class="text-sm font-semibold text-warm-900 truncate">{{ f.username }}</p>
+                      <a [routerLink]="['/u', f.username]" class="text-sm font-semibold text-warm-900 truncate hover:text-forest-700 transition-colors">{{ f.username }}</a>
                       @if (f.activeToday) {
                         <span class="text-xs text-green-600 font-medium flex-shrink-0">actif aujourd'hui</span>
                       }

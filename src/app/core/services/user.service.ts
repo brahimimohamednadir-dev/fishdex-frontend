@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
 import { User, UserStats } from '../models/user.model';
+import { PublicProfile, PersonalStats } from '../models/profile.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -21,5 +22,13 @@ export class UserService {
 
   getMyStats(): Observable<ApiResponse<UserStats>> {
     return this.http.get<ApiResponse<UserStats>>(`${this.api}/me/stats`);
+  }
+
+  getPublicProfile(username: string): Observable<ApiResponse<PublicProfile>> {
+    return this.http.get<ApiResponse<PublicProfile>>(`${this.api}/${username}`);
+  }
+
+  getPersonalStats(): Observable<ApiResponse<PersonalStats>> {
+    return this.http.get<ApiResponse<PersonalStats>>(`${this.api}/me/personal-stats`);
   }
 }

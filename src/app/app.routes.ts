@@ -109,6 +109,20 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
 
+  // ─── Profil public (accessible sans auth) ────────────────────────────────
+  {
+    path: 'u/:username',
+    loadComponent: () => import('./features/profile/public-profile/public-profile.component')
+      .then(m => m.PublicProfileComponent),
+  },
+
+  // ─── Stats personnelles ───────────────────────────────────────────────────
+  {
+    path: 'stats',
+    loadComponent: () => import('./features/stats/stats.component').then(m => m.StatsComponent),
+    canActivate: [authGuard],
+  },
+
   // ─── Social ───────────────────────────────────────────────────────────────
   {
     path: 'feed',

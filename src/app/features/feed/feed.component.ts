@@ -72,7 +72,8 @@ function timeAgo(dateStr: string): string {
                 {{ post.username[0].toUpperCase() }}
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-warm-900 leading-tight">{{ post.username }}</p>
+                <a [routerLink]="['/u', post.username]"
+                   class="text-sm font-semibold text-warm-900 leading-tight hover:text-forest-700 transition-colors">{{ post.username }}</a>
                 <p class="text-xs text-warm-400">{{ timeAgo(post.createdAt) }}
                   @if (post.visibility === 'FRIENDS') { · <span class="text-forest-500">👥 Amis</span> }
                   @if (post.visibility === 'PRIVATE') { · <span class="text-warm-400">🔒 Privé</span> }

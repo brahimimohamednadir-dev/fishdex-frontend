@@ -58,6 +58,10 @@ const GRACE_DAYS = 7;
                class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
               Amis
             </a>
+            <a routerLink="/stats" routerLinkActive="!text-warm-900 !bg-warm-200"
+               class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
+              Stats
+            </a>
             <a routerLink="/badges" routerLinkActive="!text-warm-900 !bg-warm-200"
                class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
               Badges
@@ -148,6 +152,11 @@ const GRACE_DAYS = 7;
                routerLinkActive="!bg-warm-200 !text-warm-900"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
               👥 Amis
+            </a>
+            <a routerLink="/stats" (click)="closeMenu()"
+               routerLinkActive="!bg-warm-200 !text-warm-900"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
+              📊 Stats
             </a>
             <a routerLink="/badges" (click)="closeMenu()"
                routerLinkActive="!bg-warm-200 !text-warm-900"

@@ -73,6 +73,11 @@ import { PhotoUploadComponent } from '../../../shared/components/photo-upload/ph
                   <p class="text-sm text-warm-700 font-mono">
                     {{ capture.latitude | number:'1.4-4' }}, {{ capture.longitude | number:'1.4-4' }}
                   </p>
+                  <a [href]="'https://www.google.com/maps?q=' + capture.latitude + ',' + capture.longitude"
+                     target="_blank" rel="noopener"
+                     class="text-xs text-forest-600 hover:underline mt-1 inline-block">
+                    Voir sur la carte →
+                  </a>
                 </div>
               }
               @if (capture.species) {
@@ -83,6 +88,42 @@ import { PhotoUploadComponent } from '../../../shared/components/photo-upload/ph
                     {{ capture.species.commonName }} →
                   </a>
                 </div>
+              }
+            </div>
+          }
+
+          <!-- Météo -->
+          @if (capture.weatherTemp != null) {
+            <div class="bg-white border border-warm-200 rounded-2xl p-5 shadow-sm">
+              <p class="text-xs font-semibold text-warm-400 uppercase tracking-wide mb-3">
+                🌤️ Conditions météo au moment de la capture
+              </p>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-sky-50 rounded-xl p-3 text-center">
+                  <p class="text-xl font-bold text-sky-700">{{ capture.weatherTemp | number:'1.0-1' }}°C</p>
+                  <p class="text-xs text-sky-500 mt-0.5">Température</p>
+                </div>
+                @if (capture.weatherWind != null) {
+                  <div class="bg-slate-50 rounded-xl p-3 text-center">
+                    <p class="text-xl font-bold text-slate-700">{{ capture.weatherWind | number:'1.0-1' }} m/s</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Vent</p>
+                  </div>
+                }
+                @if (capture.weatherPressure != null) {
+                  <div class="bg-indigo-50 rounded-xl p-3 text-center">
+                    <p class="text-xl font-bold text-indigo-700">{{ capture.weatherPressure | number:'1.0-0' }}</p>
+                    <p class="text-xs text-indigo-500 mt-0.5">Pression (hPa)</p>
+                  </div>
+                }
+                @if (capture.weatherClouds != null) {
+                  <div class="bg-gray-50 rounded-xl p-3 text-center">
+                    <p class="text-xl font-bold text-gray-700">{{ capture.weatherClouds }}%</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Nuages</p>
+                  </div>
+                }
+              </div>
+              @if (capture.weatherDesc) {
+                <p class="text-sm text-warm-600 mt-3 capitalize">{{ capture.weatherDesc }}</p>
               }
             </div>
           }
