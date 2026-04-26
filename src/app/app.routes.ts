@@ -109,6 +109,18 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
 
+  // ─── Social ───────────────────────────────────────────────────────────────
+  {
+    path: 'feed',
+    loadComponent: () => import('./features/feed/feed.component').then(m => m.FeedComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'friends',
+    loadComponent: () => import('./features/friends/friends.component').then(m => m.FriendsComponent),
+    canActivate: [authGuard],
+  },
+
   // ─── Notifications ────────────────────────────────────────────────────────
   {
     path: 'notifications',

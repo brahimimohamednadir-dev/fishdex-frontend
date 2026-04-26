@@ -7,6 +7,7 @@ import { SpeciesService } from '../../../core/services/species.service';
 import { Species } from '../../../core/models/species.model';
 import { ToastService } from '../../../core/services/toast.service';
 import { PhotoUploadComponent } from '../../../shared/components/photo-upload/photo-upload.component';
+import { VISIBILITY_OPTIONS } from '../../../core/models/feed.model';
 
 @Component({
   selector: 'app-capture-new',
@@ -100,6 +101,29 @@ import { PhotoUploadComponent } from '../../../shared/components/photo-upload/ph
                         class="w-full px-3.5 py-2.5 text-sm bg-white border border-warm-300 rounded-xl outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500 transition-all resize-none text-warm-900 placeholder-warm-400"
                         placeholder="Super session, eau claire..."></textarea>
             </div>
+
+            <!-- Visibilité -->
+            <div>
+              <label class="block text-xs font-semibold text-warm-500 uppercase tracking-wide mb-2">
+                Visibilité
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                @for (opt of visibilityOptions; track opt.value) {
+                  <button type="button"
+                          (click)="form.get('visibility')!.setValue(opt.value)"
+                          [class.border-forest-500]="form.get('visibility')!.value === opt.value"
+                          [class.bg-forest-50]="form.get('visibility')!.value === opt.value"
+                          [class.ring-1]="form.get('visibility')!.value === opt.value"
+                          [class.ring-forest-500]="form.get('visibility')!.value === opt.value"
+                          class="flex flex-col items-center gap-1 p-2.5 border border-warm-200 rounded-xl transition-all hover:border-forest-300 hover:bg-forest-50/50">
+                    <span class="text-xl">{{ opt.icon }}</span>
+                    <span class="text-xs font-semibold text-warm-800">{{ opt.label }}</span>
+                    <span class="text-xs text-warm-400 text-center leading-tight">{{ opt.desc }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+
           </div>
 
           @if (error) {
@@ -139,6 +163,8 @@ export class CaptureNewComponent implements OnInit {
   private router         = inject(Router);
   private toast          = inject(ToastService);
 
+  visibilityOptions = VISIBILITY_OPTIONS;
+
   form = this.fb.group({
     speciesName: ['', Validators.required],
     speciesId:   [''],
@@ -146,6 +172,7 @@ export class CaptureNewComponent implements OnInit {
     length:      [null as number | null, [Validators.required, Validators.min(0)]],
     caughtAt:    [new Date().toISOString().slice(0, 16), Validators.required],
     note:        [''],
+    visibility:  ['PUBLIC'],
   });
 
   speciesList: Species[] = [];
@@ -182,6 +209,7 @@ export class CaptureNewComponent implements OnInit {
       caughtAt,
       note:        v.note || undefined,
       speciesId:   v.speciesId ? +v.speciesId : undefined,
+      visibility:  v.visibility || 'PUBLIC',
     }).subscribe({
       next: res => {
         const captureId = res.data.id;

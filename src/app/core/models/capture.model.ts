@@ -25,6 +25,7 @@ export interface CaptureRequest {
   note?: string;
   caughtAt: string;
   speciesId?: number;
+  visibility?: string;
 }
 
 export interface Page<T> {
