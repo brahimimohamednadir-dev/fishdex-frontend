@@ -42,4 +42,6 @@ export interface Page<T> {
   totalPages: number;
   number: number;
   size: number;
+  last: boolean;
+  first: boolean;
 }

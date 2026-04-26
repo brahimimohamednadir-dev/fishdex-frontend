@@ -5,8 +5,8 @@ import {
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, switchMap, Subject } from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { Subject } from 'rxjs';
 import { FeedService } from '../../core/services/feed.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -113,7 +113,7 @@ function timeAgo(dateStr: string): string {
                       class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all hover:bg-warm-50 active:scale-95"
                       [class.text-red-500]="post.hasLiked"
                       [class.text-warm-400]="!post.hasLiked">
-                <svg class="w-5 h-5" fill="{{ post.hasLiked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5" [attr.fill]="post.hasLiked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                 </svg>
@@ -271,7 +271,7 @@ export class FeedComponent implements OnInit, AfterViewInit, OnDestroy {
   private auth         = inject(AuthService);
   private toast        = inject(ToastService);
 
-  currentUser = this.auth.currentUser$;
+  currentUser = toSignal(this.auth.currentUser$, { initialValue: this.auth.currentUser$.getValue() });
 
   // ── State ─────────────────────────────────────────────────────────────
   posts          = signal<FeedCapture[]>([]);
