@@ -9,6 +9,7 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'groups/:id/admin',          renderMode: RenderMode.Server },
   { path: 'groups/:id/admin/requests', renderMode: RenderMode.Server },
   { path: 'groups/:id/admin/reports',  renderMode: RenderMode.Server },
+  { path: 'u/:username',              renderMode: RenderMode.Server },
   // Toutes les autres routes → prerender
   { path: '**',                        renderMode: RenderMode.Prerender },
 ];
