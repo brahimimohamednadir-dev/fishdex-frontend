@@ -2,12 +2,10 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { UserService } from '../../core/services/user.service';
 import { PersonalStats } from '../../core/models/profile.model';
-import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
-
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [LoadingSpinnerComponent, RouterLink],
+  imports: [RouterLink],
   template: `
     <div class="max-w-2xl mx-auto px-4 py-8">
 
