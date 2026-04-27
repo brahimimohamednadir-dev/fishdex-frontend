@@ -62,6 +62,10 @@ const GRACE_DAYS = 7;
                class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
               Stats
             </a>
+            <a routerLink="/map" routerLinkActive="!text-warm-900 !bg-warm-200"
+               class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
+              Carte
+            </a>
             <a routerLink="/badges" routerLinkActive="!text-warm-900 !bg-warm-200"
                class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
               Badges
@@ -69,6 +73,10 @@ const GRACE_DAYS = 7;
             <a routerLink="/groups" routerLinkActive="!text-warm-900 !bg-warm-200"
                class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
               Groupes
+            </a>
+            <a routerLink="/leaderboard" routerLinkActive="!text-warm-900 !bg-warm-200"
+               class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
+              🏆
             </a>
           }
         </nav>
@@ -158,6 +166,11 @@ const GRACE_DAYS = 7;
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
               📊 Stats
             </a>
+            <a routerLink="/map" (click)="closeMenu()"
+               routerLinkActive="!bg-warm-200 !text-warm-900"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
+              🗺️ Carte des spots
+            </a>
             <a routerLink="/badges" (click)="closeMenu()"
                routerLinkActive="!bg-warm-200 !text-warm-900"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
@@ -167,6 +180,11 @@ const GRACE_DAYS = 7;
                routerLinkActive="!bg-warm-200 !text-warm-900"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
               🏕️ Groupes
+            </a>
+            <a routerLink="/leaderboard" (click)="closeMenu()"
+               routerLinkActive="!bg-warm-200 !text-warm-900"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-warm-700 hover:bg-warm-100 transition-all">
+              🏆 Classement
             </a>
             <a routerLink="/notifications" (click)="closeMenu()"
                routerLinkActive="!bg-warm-200 !text-warm-900"

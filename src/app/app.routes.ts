@@ -116,6 +116,19 @@ export const routes: Routes = [
       .then(m => m.PublicProfileComponent),
   },
 
+  // ─── Leaderboard (public) ─────────────────────────────────────────────────
+  {
+    path: 'leaderboard',
+    loadComponent: () => import('./features/leaderboard/leaderboard.component').then(m => m.LeaderboardComponent),
+  },
+
+  // ─── Carte des spots ──────────────────────────────────────────────────────
+  {
+    path: 'map',
+    loadComponent: () => import('./features/map/map.component').then(m => m.MapComponent),
+    canActivate: [authGuard],
+  },
+
   // ─── Stats personnelles ───────────────────────────────────────────────────
   {
     path: 'stats',

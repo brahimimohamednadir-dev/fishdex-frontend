@@ -106,6 +106,7 @@ export class GroupRequestsComponent implements OnInit {
   }
 
   accept(req: JoinRequest): void {
+    if (this.processingId() !== null) return;
     this.processingId.set(req.id);
     this.groupService.acceptRequest(this.groupId, req.userId).subscribe({
       next: () => {
@@ -121,6 +122,7 @@ export class GroupRequestsComponent implements OnInit {
   }
 
   reject(req: JoinRequest): void {
+    if (this.processingId() !== null) return;
     this.processingId.set(req.id);
     this.groupService.rejectRequest(this.groupId, req.userId).subscribe({
       next: () => {

@@ -107,6 +107,7 @@ export class GroupReportsComponent implements OnInit {
   }
 
   deleteContent(report: Report): void {
+    if (this.deletingId() !== null) return;
     if (!confirm('Supprimer ce contenu signalé ?')) return;
     this.deletingId.set(report.id);
     this.postService.deleteReportedContent(this.groupId, report.id).subscribe({

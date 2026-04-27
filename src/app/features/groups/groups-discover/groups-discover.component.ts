@@ -179,6 +179,7 @@ export class GroupsDiscoverComponent implements OnInit {
   }
 
   join(group: Group): void {
+    if (this.joiningId() !== null) return;
     this.joiningId.set(group.id);
     this.groupService.joinGroup(group.id).subscribe({
       next: res => {

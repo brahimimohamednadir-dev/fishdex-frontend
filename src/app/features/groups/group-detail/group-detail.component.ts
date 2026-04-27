@@ -212,7 +212,7 @@ const CATEGORY_LABELS: Record<string, string> = {
                       <!-- Post menu -->
                       @if (post.canEdit || post.canDelete || post.canPin || !post.reported) {
                         <div class="relative">
-                          <button (click)="togglePostMenu(post.id)"
+                          <button (click)="togglePostMenu(post.id, $event)"
                                   class="w-7 h-7 flex items-center justify-center rounded-lg text-warm-400 hover:text-warm-700 hover:bg-warm-100 transition-all text-base leading-none">
                             ···
                           </button>
@@ -301,7 +301,7 @@ const CATEGORY_LABELS: Record<string, string> = {
                       <div class="flex items-center gap-1 flex-1">
                         @for (r of topReactions(post); track r.type) {
                           <button
-                            (click)="toggleReaction(post, r.type)"
+                            (click)="toggleReaction(post, r.type, $event)"
                             [class]="r.reacted
                               ? 'flex items-center gap-1 px-2 py-1 rounded-lg bg-forest-100 border border-forest-300 text-xs font-semibold text-forest-700 transition-all'
                               : 'flex items-center gap-1 px-2 py-1 rounded-lg bg-warm-50 border border-warm-200 text-xs text-warm-600 hover:bg-warm-100 transition-all'"
@@ -310,7 +310,7 @@ const CATEGORY_LABELS: Record<string, string> = {
                           </button>
                         }
                         @if (post.totalReactions === 0) {
-                          <button (click)="toggleReactionPicker(post.id)"
+                          <button (click)="toggleReactionPicker(post.id, $event)"
                                   class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-warm-400 hover:text-warm-600 hover:bg-warm-50 transition-all">
                             👍 Réagir
                           </button>
@@ -319,7 +319,7 @@ const CATEGORY_LABELS: Record<string, string> = {
                         @if (openReactionPicker() === post.id) {
                           <div class="flex items-center gap-1 p-1.5 bg-white border border-warm-200 rounded-xl shadow-lg">
                             @for (type of reactionTypes; track type) {
-                              <button (click)="addReaction(post, type)"
+                              <button (click)="addReaction(post, type, $event)"
                                       class="w-8 h-8 flex items-center justify-center rounded-lg text-base hover:bg-warm-100 transition-all">
                                 {{ reactionEmoji(type) }}
                               </button>
@@ -498,6 +498,7 @@ export class GroupDetailComponent implements OnInit, OnDestroy {
   }
 
   joinGroup(): void {
+    if (this.actionLoading()) return;
     this.actionLoading.set(true);
     this.groupService.joinGroup(this.groupId).subscribe({
       next: res => {
@@ -550,8 +551,8 @@ export class GroupDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  togglePostMenu(id: number): void {
-    event?.stopPropagation();
+  togglePostMenu(id: number, e: Event): void {
+    e.stopPropagation();
     this.openPostMenu.update(cur => cur === id ? null : id);
     this.openReactionPicker.set(null);
   }
@@ -625,13 +626,13 @@ export class GroupDetailComponent implements OnInit, OnDestroy {
 
   reactionEmoji(type: ReactionType): string { return REACTION_EMOJIS[type]; }
 
-  toggleReactionPicker(id: number): void {
-    event?.stopPropagation();
+  toggleReactionPicker(id: number, e: Event): void {
+    e.stopPropagation();
     this.openReactionPicker.update(cur => cur === id ? null : id);
   }
 
-  toggleReaction(post: Post, type: ReactionType): void {
-    event?.stopPropagation();
+  toggleReaction(post: Post, type: ReactionType, e: Event): void {
+    e.stopPropagation();
     const existing = post.reactions.find(r => r.reacted);
     if (existing && existing.type === type) {
       this.postService.removeReaction(this.groupId, post.id).subscribe({
@@ -639,13 +640,13 @@ export class GroupDetailComponent implements OnInit, OnDestroy {
         error: () => {},
       });
     } else {
-      this.addReaction(post, type);
+      this.addReaction(post, type, e);
     }
     this.openReactionPicker.set(null);
   }
 
-  addReaction(post: Post, type: ReactionType): void {
-    event?.stopPropagation();
+  addReaction(post: Post, type: ReactionType, e: Event): void {
+    e.stopPropagation();
     // Remove old if existed
     const old = post.reactions.find(r => r.reacted);
     if (old) {
@@ -684,18 +685,25 @@ export class GroupDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  private submittingCommentId: number | null = null;
+
   submitComment(post: Post): void {
     const text = this.commentTexts[post.id]?.trim();
-    if (!text) return;
+    if (!text || this.submittingCommentId === post.id) return;
+    this.submittingCommentId = post.id;
     this.postService.addComment(this.groupId, post.id, text).subscribe({
       next: res => {
+        this.submittingCommentId = null;
         this.commentTexts[post.id] = '';
         this.posts.update(prev => prev.map(p => p.id === post.id
           ? { ...p, comments: [...p.comments, res.data], commentCount: p.commentCount + 1 }
           : p
         ));
       },
-      error: err => this.toast.error(err.error?.message ?? 'Impossible de commenter'),
+      error: err => {
+        this.submittingCommentId = null;
+        this.toast.error(err.error?.message ?? 'Impossible de commenter');
+      },
     });
   }
 

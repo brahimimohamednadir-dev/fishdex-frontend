@@ -7,15 +7,12 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 interface BadgeDef { type: string; label: string; icon: string; }
 
 const BADGE_CATALOG: BadgeDef[] = [
-  { type: 'FIRST_CATCH',       label: 'Première Capture',  icon: '🎣' },
-  { type: 'TEN_CATCHES',       label: 'Pêcheur Régulier',  icon: '🐟' },
-  { type: 'FIFTY_CATCHES',     label: 'Demi-Centenaire',   icon: '⭐' },
-  { type: 'HUNDRED_CATCHES',   label: 'Maître Pêcheur',    icon: '👑' },
-  { type: 'BIG_FISH',          label: 'Grosse Prise',      icon: '🐋' },
-  { type: 'SPECIES_DIVERSITY', label: 'Naturaliste',       icon: '🦈' },
-  { type: 'FIRST_PHOTO',       label: 'Photographe',       icon: '📸' },
-  { type: 'GROUP_MEMBER',      label: 'Social',            icon: '👥' },
-  { type: 'PREMIUM',           label: 'Supporter',         icon: '💎' },
+  { type: 'FIRST_CAPTURE', label: 'Première prise',       icon: '🎣' },
+  { type: 'CAPTURE_5',     label: 'Pêcheur confirmé',     icon: '🐟' },
+  { type: 'CAPTURE_10',    label: 'Expert de la canne',   icon: '⭐' },
+  { type: 'SPECIES_3',     label: 'Diversité aquatique',  icon: '🦈' },
+  { type: 'SPECIES_5',     label: 'Chasseur de trophées', icon: '🌊' },
+  { type: 'FIRST_GROUP',   label: "Esprit d'équipe",      icon: '👥' },
 ];
 
 @Component({

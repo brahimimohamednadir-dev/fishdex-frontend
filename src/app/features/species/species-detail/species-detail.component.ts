@@ -656,7 +656,7 @@ export class SpeciesDetailComponent implements OnInit {
   }
 
   submitTip(): void {
-    if (!this.newTipContent.trim() || !this.species) return;
+    if (!this.newTipContent.trim() || !this.species || this.submittingTip) return;
     this.submittingTip = true;
     this.speciesService.addCommunityTip(this.species.id, this.newTipContent.trim()).subscribe({
       next: () => {
