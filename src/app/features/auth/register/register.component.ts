@@ -174,6 +174,22 @@ function confirmPasswordValidator(control: AbstractControl): ValidationErrors | 
               }
             </div>
 
+            <!-- RGPD — Consentement obligatoire -->
+            <div class="flex items-start gap-3 p-3 bg-warm-50 border border-warm-200 rounded-xl">
+              <input type="checkbox" formControlName="privacyAccepted" id="privacy"
+                     class="mt-0.5 w-4 h-4 accent-forest-600 cursor-pointer shrink-0">
+              <label for="privacy" class="text-xs text-warm-600 cursor-pointer leading-relaxed">
+                J'ai lu et j'accepte les
+                <a href="/privacy" target="_blank" class="text-forest-600 font-semibold hover:underline">Conditions d'utilisation</a>
+                et la
+                <a href="/privacy" target="_blank" class="text-forest-600 font-semibold hover:underline">Politique de confidentialité</a>.
+                Mes données sont traitées conformément au RGPD.
+              </label>
+            </div>
+            @if (touched('privacyAccepted') && form.get('privacyAccepted')?.invalid) {
+              <p class="text-xs text-red-500 -mt-2">Vous devez accepter les conditions pour continuer</p>
+            }
+
             @if (error) {
               <div class="flex items-start gap-2.5 p-3 bg-red-50 border border-red-100 rounded-xl">
                 <span class="text-red-500 shrink-0 mt-0.5">⚠</span>
@@ -225,6 +241,7 @@ export class RegisterComponent {
     email:           ['', [Validators.required, Validators.email]],
     password:        ['', [Validators.required, passwordRulesValidator]],
     confirmPassword: ['', [Validators.required, confirmPasswordValidator]],
+    privacyAccepted: [false, Validators.requiredTrue],
   });
 
   touched(field: string): boolean { return !!this.form.get(field)?.touched; }
@@ -243,7 +260,7 @@ export class RegisterComponent {
     if (this.form.invalid) return;
     this.loading = true; this.error = '';
     const { username, email, password } = this.form.value;
-    this.auth.register(username!, email!, password!).subscribe({
+    this.auth.register(username!, email!, password!, true).subscribe({
       next: () => {
         this.loading = false;
         this.router.navigate(['/verify-email'], { queryParams: { email } });
