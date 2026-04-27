@@ -79,7 +79,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
         <!-- ── Graphique mensuel ──────────────────────────────────────── -->
         <div class="bg-white border border-warm-200 rounded-2xl p-5 shadow-sm mb-6">
           <h2 class="text-sm font-semibold text-warm-900 mb-4">
-            Captures {{ currentYear() }} — mois par mois
+            Captures {{ currentYear }} — mois par mois
           </h2>
 
           @if (maxMonthlyCount() === 0) {
@@ -93,8 +93,8 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
                        style="height: 100px">
                     <div class="w-full rounded-t-md transition-all duration-500"
                          [style.height.%]="barHeight(m.count)"
-                         [class.bg-forest-600]="m.count > 0 && m.month !== currentMonth()"
-                         [class.bg-amber-400]="m.count > 0 && m.month === currentMonth()"
+                         [class.bg-forest-600]="m.count > 0 && m.month !== currentMonth"
+                         [class.bg-amber-400]="m.count > 0 && m.month === currentMonth"
                          [class.bg-warm-100]="m.count === 0">
                     </div>
                     @if (m.count > 0) {
@@ -183,8 +183,8 @@ export class StatsComponent implements OnInit {
   stats   = signal<PersonalStats | null>(null);
   loading = signal(true);
 
-  currentYear  = computed(() => new Date().getFullYear());
-  currentMonth = computed(() => new Date().getMonth() + 1);
+  readonly currentYear  = new Date().getFullYear();
+  readonly currentMonth = new Date().getMonth() + 1;
 
   maxMonthlyCount = computed(() => {
     const s = this.stats();
