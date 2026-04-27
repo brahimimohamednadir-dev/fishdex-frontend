@@ -181,6 +181,15 @@ const TYPE_TEXTS: Partial<Record<string, string>> = {
                     class="px-3 py-1.5 rounded-lg text-xs text-warm-400 hover:text-red-500 hover:bg-red-50 transition-all font-medium">
               Déco
             </button>
+          } @else {
+            <a routerLink="/login"
+               class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:bg-warm-100 transition-all font-medium">
+              Connexion
+            </a>
+            <a routerLink="/register"
+               class="px-4 py-1.5 rounded-lg text-sm font-semibold text-white bg-forest-600 hover:bg-forest-700 transition-all">
+              S'inscrire
+            </a>
           }
         </div>
 
@@ -247,6 +256,15 @@ const TYPE_TEXTS: Partial<Record<string, string>> = {
                 </div>
               }
             </div>
+          } @else {
+            <a routerLink="/login"
+               class="px-3 py-1.5 rounded-lg text-sm text-warm-600 font-medium hover:bg-warm-100 transition-all">
+              Connexion
+            </a>
+            <a routerLink="/register"
+               class="px-3 py-1.5 rounded-lg text-sm font-semibold text-white bg-forest-600 hover:bg-forest-700 transition-all">
+              S'inscrire
+            </a>
           }
         </div>
 
