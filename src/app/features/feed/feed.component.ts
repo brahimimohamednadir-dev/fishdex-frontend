@@ -40,9 +40,26 @@ function timeAgo(dateStr: string): string {
         </button>
       }
 
-      <!-- Loading initial -->
+      <!-- Skeletons loading initial -->
       @if (loading() && posts().length === 0) {
-        <app-loading-spinner />
+        <div class="space-y-4">
+          @for (i of [1,2,3]; track i) {
+            <div class="bg-white sm:rounded-2xl overflow-hidden border-b border-warm-100 sm:border sm:shadow-sm">
+              <div class="flex items-center gap-3 px-4 py-3">
+                <div class="w-9 h-9 rounded-full bg-warm-200 animate-pulse"></div>
+                <div class="flex-1 space-y-1.5">
+                  <div class="h-3 bg-warm-200 rounded animate-pulse w-24"></div>
+                  <div class="h-2.5 bg-warm-200 rounded animate-pulse w-16"></div>
+                </div>
+              </div>
+              <div class="aspect-square bg-warm-200 animate-pulse"></div>
+              <div class="px-4 py-3 space-y-2">
+                <div class="h-3 bg-warm-200 rounded animate-pulse w-3/4"></div>
+                <div class="h-3 bg-warm-200 rounded animate-pulse w-1/2"></div>
+              </div>
+            </div>
+          }
+        </div>
       }
 
       <!-- Empty state -->

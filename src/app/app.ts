@@ -12,7 +12,7 @@ import { AuthService } from './core/services/auth.service';
   imports: [RouterOutlet, NavbarComponent, ToastComponent],
   template: `
     <app-navbar />
-    <main class="min-h-screen bg-warm-100">
+    <main class="min-h-screen bg-warm-100 pb-20 md:pb-0">
       <router-outlet />
     </main>
     <app-toast />

@@ -28,3 +28,43 @@ input, select, textarea, button {
   outline: 2px solid #3D6B4F;
   outline-offset: 2px;
 }
+
+/* ===== Bottom nav mobile padding ===== */
+/* Toutes les pages principales ont un padding en bas sur mobile */
+app-root > * main,
+router-outlet + * {
+  padding-bottom: 5rem;
+}
+@media (min-width: 768px) {
+  router-outlet + * {
+    padding-bottom: 0;
+  }
+}
+
+/* ===== Safe area (iPhone notch) ===== */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ===== Transitions de page ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter { animation: fadeIn 0.2s ease-out; }
+
+/* ===== Active tap feedback ===== */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== Image loading ===== */
+img {
+  transition: opacity 0.3s ease;
+}
+img[loading="lazy"] {
+  opacity: 0;
+}
+img[loading="lazy"].loaded {
+  opacity: 1;
+}

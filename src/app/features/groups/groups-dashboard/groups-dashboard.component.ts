@@ -41,7 +41,17 @@ const CATEGORY_COLORS: Record<string, string> = {
       </div>
 
       @if (loading()) {
-        <app-loading-spinner />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="bg-white border border-warm-200 rounded-2xl shadow-sm overflow-hidden">
+              <div class="h-28 bg-warm-200 animate-pulse"></div>
+              <div class="p-4 space-y-2">
+                <div class="h-4 bg-warm-200 rounded animate-pulse w-3/4"></div>
+                <div class="h-3 bg-warm-200 rounded animate-pulse w-1/2"></div>
+              </div>
+            </div>
+          }
+        </div>
       } @else if (groups().length === 0) {
         <!-- Empty state -->
         <div class="text-center py-20 border-2 border-dashed border-warm-300 rounded-2xl">
@@ -56,7 +66,7 @@ const CATEGORY_COLORS: Record<string, string> = {
       } @else {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           @for (group of groups(); track group.id) {
-            <div class="bg-white border border-warm-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+            <div class="bg-white border border-warm-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-md active:scale-[0.98] transition-all cursor-pointer select-none"
                  (click)="navigate(group.id)">
               <!-- Cover photo or colored placeholder -->
               @if (group.coverPhotoUrl) {

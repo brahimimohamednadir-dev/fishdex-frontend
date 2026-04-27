@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { UserService } from '../../core/services/user.service';
 import { PersonalStats } from '../../core/models/profile.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
@@ -6,7 +7,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [LoadingSpinnerComponent],
+  imports: [LoadingSpinnerComponent, RouterLink],
   template: `
     <div class="max-w-2xl mx-auto px-4 py-8">
 
@@ -16,8 +17,24 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
       </div>
 
       @if (loading()) {
-        <div class="flex justify-center py-20"><app-loading-spinner /></div>
-      } @else if (stats()) {
+        <!-- Skeletons -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="h-20 bg-warm-200 rounded-2xl animate-pulse"></div>
+          }
+        </div>
+        <div class="h-48 bg-warm-200 rounded-2xl animate-pulse mb-6"></div>
+        <div class="h-64 bg-warm-200 rounded-2xl animate-pulse"></div>
+      } @else if (!stats()) {
+        <div class="text-center py-24">
+          <p class="text-4xl mb-3">📊</p>
+          <p class="text-base font-semibold text-warm-800 mb-1">Aucune stat disponible</p>
+          <p class="text-sm text-warm-400">Ajoute des captures pour voir tes statistiques.</p>
+          <a routerLink="/captures/new" class="inline-block mt-6 px-5 py-2.5 bg-forest-600 text-white text-sm font-semibold rounded-xl hover:bg-forest-700 transition-all">
+            + Ajouter une capture
+          </a>
+        </div>
+      } @else {
 
         <!-- ── Chiffres clés ─────────────────────────────────────────── -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
@@ -74,9 +91,10 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
                   <!-- Barre -->
                   <div class="w-full relative flex items-end justify-center"
                        style="height: 100px">
-                    <div class="w-full rounded-t-md transition-all"
+                    <div class="w-full rounded-t-md transition-all duration-500"
                          [style.height.%]="barHeight(m.count)"
-                         [class.bg-forest-600]="m.count > 0"
+                         [class.bg-forest-600]="m.count > 0 && m.month !== currentMonth()"
+                         [class.bg-amber-400]="m.count > 0 && m.month === currentMonth()"
                          [class.bg-warm-100]="m.count === 0">
                     </div>
                     @if (m.count > 0) {
@@ -165,7 +183,8 @@ export class StatsComponent implements OnInit {
   stats   = signal<PersonalStats | null>(null);
   loading = signal(true);
 
-  currentYear = computed(() => new Date().getFullYear());
+  currentYear  = computed(() => new Date().getFullYear());
+  currentMonth = computed(() => new Date().getMonth() + 1);
 
   maxMonthlyCount = computed(() => {
     const s = this.stats();
