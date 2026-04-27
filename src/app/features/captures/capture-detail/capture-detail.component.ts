@@ -130,17 +130,26 @@ import { PhotoUploadComponent } from '../../../shared/components/photo-upload/ph
 
           <!-- Danger zone -->
           <div class="bg-white border border-warm-200 rounded-2xl p-5 shadow-sm">
-            <button (click)="delete()" [disabled]="deleting"
-                    class="w-full py-2.5 text-sm font-medium text-red-500 bg-white border border-red-100 rounded-xl hover:bg-red-50 disabled:opacity-40 transition-all">
-              @if (deleting) {
-                <span class="flex items-center justify-center gap-2">
-                  <span class="w-4 h-4 border-2 border-red-300 border-t-red-500 rounded-full animate-spin"></span>
-                  Suppression...
-                </span>
-              } @else {
+            @if (!confirmDelete) {
+              <button (click)="confirmDelete = true" [disabled]="deleting"
+                      class="w-full py-2.5 text-sm font-medium text-red-500 bg-white border border-red-100 rounded-xl hover:bg-red-50 disabled:opacity-40 transition-all">
                 Supprimer cette capture
-              }
-            </button>
+              </button>
+            } @else {
+              <div class="text-center">
+                <p class="text-sm font-medium text-warm-800 mb-3">Supprimer définitivement ?</p>
+                <div class="flex gap-2">
+                  <button (click)="confirmDelete = false"
+                          class="flex-1 py-2 text-sm font-medium text-warm-600 bg-warm-100 rounded-xl hover:bg-warm-200 transition-all">
+                    Annuler
+                  </button>
+                  <button (click)="delete()" [disabled]="deleting"
+                          class="flex-1 py-2 text-sm font-semibold text-white bg-red-500 rounded-xl hover:bg-red-600 disabled:opacity-40 transition-all">
+                    @if (deleting) { Suppression... } @else { Oui, supprimer }
+                  </button>
+                </div>
+              </div>
+            }
           </div>
 
         </div>
@@ -155,7 +164,7 @@ export class CaptureDetailComponent implements OnInit {
   private toast          = inject(ToastService);
 
   capture: Capture | null = null;
-  loading = true; error = ''; deleting = false;
+  loading = true; error = ''; deleting = false; confirmDelete = false;
   uploadingPhoto = false; uploadProgress = 0;
 
   ngOnInit(): void {
@@ -196,7 +205,7 @@ export class CaptureDetailComponent implements OnInit {
   }
 
   delete(): void {
-    if (!this.capture || !confirm('Supprimer cette capture définitivement ?')) return;
+    if (!this.capture) return;
     this.deleting = true;
     this.captureService.deleteCapture(this.capture.id).subscribe({
       next:  () => { this.toast.success('Capture supprimée.'); this.router.navigate(['/captures']); },

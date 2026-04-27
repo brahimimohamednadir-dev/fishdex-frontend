@@ -102,6 +102,32 @@ import { VISIBILITY_OPTIONS } from '../../../core/models/feed.model';
                         placeholder="Super session, eau claire..."></textarea>
             </div>
 
+            <!-- GPS -->
+            <div>
+              <label class="block text-xs font-semibold text-warm-500 uppercase tracking-wide mb-1.5">
+                📍 Localisation
+              </label>
+              @if (gpsLoading) {
+                <div class="flex items-center gap-2 text-xs text-warm-500 py-2">
+                  <span class="w-4 h-4 border-2 border-forest-400 border-t-transparent rounded-full animate-spin"></span>
+                  Acquisition GPS...
+                </div>
+              } @else if (gpsCoords) {
+                <div class="flex items-center justify-between bg-forest-50 border border-forest-200 rounded-xl px-3 py-2.5">
+                  <span class="text-xs text-forest-700 font-mono">📍 {{ gpsCoords }}</span>
+                  <button type="button" (click)="clearGps()" class="text-warm-400 hover:text-red-500 text-sm leading-none transition-colors">✕</button>
+                </div>
+              } @else {
+                <button type="button" (click)="getGps()"
+                        class="w-full py-2.5 text-sm font-medium text-forest-700 bg-forest-50 border border-forest-200 rounded-xl hover:bg-forest-100 transition-all flex items-center justify-center gap-2">
+                  📍 Utiliser ma position actuelle
+                </button>
+                @if (gpsError) {
+                  <p class="text-xs text-amber-600 mt-1">{{ gpsError }}</p>
+                }
+              }
+            </div>
+
             <!-- Visibilité -->
             <div>
               <label class="block text-xs font-semibold text-warm-500 uppercase tracking-wide mb-2">
@@ -137,7 +163,7 @@ import { VISIBILITY_OPTIONS } from '../../../core/models/feed.model';
                class="flex-1 text-center py-2.5 text-sm font-medium text-warm-600 bg-warm-50 border border-warm-200 rounded-xl hover:bg-warm-100 transition-all">
               Annuler
             </a>
-            <button type="submit" [disabled]="loading || form.invalid"
+            <button type="submit" [disabled]="loading"
                     class="flex-1 py-2.5 text-sm font-semibold text-white bg-forest-600 rounded-xl hover:bg-forest-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
               @if (loading) {
                 <span class="flex items-center justify-center gap-2">
@@ -182,6 +208,13 @@ export class CaptureNewComponent implements OnInit {
   loading = false;
   error   = '';
 
+  // GPS
+  gpsLoading = false;
+  gpsError   = '';
+  gpsCoords  = '';
+  private lat: number | null = null;
+  private lng: number | null = null;
+
   ngOnInit(): void {
     this.speciesService.getAllSpecies(0, 50).subscribe({
       next: res => (this.speciesList = res.data.content),
@@ -192,8 +225,42 @@ export class CaptureNewComponent implements OnInit {
   onPhotoSelected(file: File): void  { this.selectedPhoto = file; }
   onPhotoRemoved():         void     { this.selectedPhoto = null; }
 
+  getGps(): void {
+    if (!navigator.geolocation) { this.gpsError = 'Géolocalisation non supportée sur cet appareil.'; return; }
+    this.gpsLoading = true;
+    this.gpsError   = '';
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        this.lat       = pos.coords.latitude;
+        this.lng       = pos.coords.longitude;
+        this.gpsCoords = `${this.lat.toFixed(5)}, ${this.lng.toFixed(5)}`;
+        this.gpsLoading = false;
+      },
+      err => {
+        this.gpsLoading = false;
+        this.gpsError = err.code === 1
+          ? 'Accès à la position refusé. Autorise la géolocalisation dans ton navigateur.'
+          : 'Impossible d\'obtenir ta position. Réessaie.';
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+
+  clearGps(): void { this.lat = null; this.lng = null; this.gpsCoords = ''; this.gpsError = ''; }
+
   submit(): void {
-    if (this.form.invalid) return;
+    // Afficher les erreurs de validation si le form est invalide
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      const msgs: string[] = [];
+      if (this.form.get('speciesName')?.invalid) msgs.push('Nom de l\'espèce requis');
+      if (this.form.get('weight')?.invalid)      msgs.push('Poids requis');
+      if (this.form.get('length')?.invalid)      msgs.push('Taille requise');
+      if (this.form.get('caughtAt')?.invalid)    msgs.push('Date requise');
+      this.error = msgs.join(' · ');
+      this.toast.error(this.error || 'Remplis tous les champs obligatoires (*)');
+      return;
+    }
     this.loading = true;
     this.error   = '';
     const v = this.form.value;
@@ -210,6 +277,8 @@ export class CaptureNewComponent implements OnInit {
       note:        v.note || undefined,
       speciesId:   v.speciesId ? +v.speciesId : undefined,
       visibility:  v.visibility || 'PUBLIC',
+      latitude:    this.lat ?? undefined,
+      longitude:   this.lng ?? undefined,
     }).subscribe({
       next: res => {
         const captureId = res.data.id;

@@ -17,17 +17,21 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 }
 
-const TYPE_ICONS: Record<NotificationType, string> = {
+const TYPE_ICONS: Partial<Record<NotificationType, string>> = {
   JOIN_REQUEST_ACCEPTED: '✅',
   JOIN_REQUEST_REJECTED: '❌',
-  POST_REACTION: '👍',
-  POST_COMMENT: '💬',
-  COMMENT_REPLY: '↩️',
-  GROUP_KICKED: '🚫',
-  POST_PINNED: '📌',
+  POST_REACTION:         '👍',
+  POST_COMMENT:          '💬',
+  COMMENT_REPLY:         '↩️',
+  GROUP_KICKED:          '🚫',
+  POST_PINNED:           '📌',
+  FRIEND_REQUEST:        '👋',
+  FRIEND_ACCEPTED:       '🤝',
+  CAPTURE_LIKED:         '❤️',
+  CAPTURE_COMMENTED:     '💬',
 };
 
-const TYPE_TEXTS: Record<NotificationType, (n: AppNotification) => string> = {
+const TYPE_TEXTS: Partial<Record<NotificationType, (n: AppNotification) => string>> = {
   JOIN_REQUEST_ACCEPTED: n => `Ta demande pour rejoindre "${n.groupName}" a été acceptée`,
   JOIN_REQUEST_REJECTED: n => `Ta demande pour rejoindre "${n.groupName}" a été refusée`,
   POST_REACTION:         n => `${n.actorUsername} a réagi à ton post`,
@@ -35,6 +39,10 @@ const TYPE_TEXTS: Record<NotificationType, (n: AppNotification) => string> = {
   COMMENT_REPLY:         n => `${n.actorUsername} a répondu à ton commentaire`,
   GROUP_KICKED:          n => `Tu as été expulsé de "${n.groupName}"`,
   POST_PINNED:           n => `Ton post dans "${n.groupName}" a été épinglé`,
+  FRIEND_REQUEST:        n => `${n.actorUsername} t'a envoyé une demande d'ami`,
+  FRIEND_ACCEPTED:       n => `${n.actorUsername} a accepté ta demande d'ami 🎣`,
+  CAPTURE_LIKED:         n => `${n.actorUsername} a aimé ta capture`,
+  CAPTURE_COMMENTED:     n => `${n.actorUsername} a commenté ta capture`,
 };
 
 @Component({
@@ -183,8 +191,11 @@ export class NotificationsComponent implements OnInit {
       });
     }
     // Navigate to relevant content
-    if (notif.groupId && notif.postId) {
-      this.router.navigate(['/groups', notif.groupId]);
+    if (notif.type === 'FRIEND_REQUEST' || notif.type === 'FRIEND_ACCEPTED') {
+      this.router.navigate(['/friends']);
+    } else if (notif.type === 'CAPTURE_LIKED' || notif.type === 'CAPTURE_COMMENTED') {
+      // Navigate to feed or the capture if we had the id
+      this.router.navigate(['/feed']);
     } else if (notif.groupId) {
       this.router.navigate(['/groups', notif.groupId]);
     }
