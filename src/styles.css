@@ -56,15 +56,10 @@ router-outlet + * {
 /* ===== Active tap feedback ===== */
 button, a {
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* ===== Image loading ===== */
 img {
-  transition: opacity 0.3s ease;
-}
-img[loading="lazy"] {
-  opacity: 0;
-}
-img[loading="lazy"].loaded {
-  opacity: 1;
+  display: block;
 }

@@ -69,12 +69,11 @@ import { DatePipe } from '@angular/common';
         <div class="grid grid-cols-3 gap-0.5 rounded-2xl overflow-hidden">
           @for (capture of captures; track capture.id) {
             <a [routerLink]="['/captures', capture.id]"
-               class="relative aspect-square overflow-hidden bg-warm-100 group">
+               class="relative aspect-square overflow-hidden bg-warm-100 block">
 
               @if (capture.photoUrl) {
                 <img [src]="capture.photoUrl" [alt]="capture.speciesName"
-                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                     loading="lazy">
+                     class="w-full h-full object-cover">
               } @else {
                 <div class="w-full h-full bg-gradient-to-br from-forest-50 to-forest-100 flex flex-col items-center justify-center gap-1">
                   <span class="text-3xl opacity-30">🐟</span>
@@ -82,22 +81,14 @@ import { DatePipe } from '@angular/common';
                 </div>
               }
 
-              <!-- Overlay au hover -->
-              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-2">
-                <p class="text-white text-xs font-bold truncate">{{ capture.speciesName }}</p>
-                <div class="flex items-center gap-2 mt-0.5">
-                  @if (capture.weight) {
-                    <span class="text-white/80 text-[10px]">⚖️ {{ capture.weight }}kg</span>
-                  }
-                  @if (capture.length) {
-                    <span class="text-white/80 text-[10px]">📏 {{ capture.length }}cm</span>
-                  }
-                </div>
+              <!-- Overlay permanent en bas avec le nom -->
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 pt-4 pb-1.5 pointer-events-none">
+                <p class="text-white text-[10px] font-semibold truncate leading-tight">{{ capture.speciesName }}</p>
               </div>
 
               <!-- Badge poids record -->
               @if (capture.weight && capture.weight >= 10) {
-                <span class="absolute top-1.5 right-1.5 bg-amber-400 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">
+                <span class="absolute top-1.5 right-1.5 bg-amber-400 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow pointer-events-none">
                   🏆
                 </span>
               }
