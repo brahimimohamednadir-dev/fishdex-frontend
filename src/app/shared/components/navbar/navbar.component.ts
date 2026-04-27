@@ -61,23 +61,19 @@ const TYPE_TEXTS: Partial<Record<string, string>> = {
 
         <!-- Nav desktop (cachée sur mobile) -->
         <nav class="hidden md:flex items-center gap-0.5">
-          <a routerLink="/feed" routerLinkActive="!bg-warm-100 !text-warm-900"
-             class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium"
-             *ngIf="false">Feed</a>
-
           @if (user()) {
             <a routerLink="/feed" routerLinkActive="bg-warm-100 text-warm-900"
                class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
               Feed
             </a>
+            <a routerLink="/captures" routerLinkActive="bg-warm-100 text-warm-900"
+               class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
+              Captures
+            </a>
           }
-          <a routerLink="/captures" routerLinkActive="bg-warm-100 text-warm-900"
-             class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
-            Captures
-          </a>
           <a routerLink="/species" routerLinkActive="bg-warm-100 text-warm-900"
              class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
-            Espèces
+            Encyclopédie
           </a>
           @if (user()) {
             <a routerLink="/friends" routerLinkActive="bg-warm-100 text-warm-900"
@@ -100,11 +96,11 @@ const TYPE_TEXTS: Partial<Record<string, string>> = {
                class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
               Groupes
             </a>
+            <a routerLink="/leaderboard" routerLinkActive="bg-warm-100 text-warm-900"
+               class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
+              🏆
+            </a>
           }
-          <a routerLink="/leaderboard" routerLinkActive="bg-warm-100 text-warm-900"
-             class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-all font-medium">
-            🏆
-          </a>
         </nav>
 
         <!-- Actions desktop -->
@@ -185,15 +181,6 @@ const TYPE_TEXTS: Partial<Record<string, string>> = {
                     class="px-3 py-1.5 rounded-lg text-xs text-warm-400 hover:text-red-500 hover:bg-red-50 transition-all font-medium">
               Déco
             </button>
-          } @else {
-            <a routerLink="/login"
-               class="px-3 py-1.5 rounded-lg text-sm text-warm-600 hover:bg-warm-100 transition-all font-medium">
-              Connexion
-            </a>
-            <a routerLink="/register"
-               class="px-4 py-1.5 rounded-lg text-sm font-semibold text-white bg-forest-600 hover:bg-forest-700 transition-all">
-              S'inscrire
-            </a>
           }
         </div>
 
@@ -260,15 +247,6 @@ const TYPE_TEXTS: Partial<Record<string, string>> = {
                 </div>
               }
             </div>
-          } @else {
-            <a routerLink="/login"
-               class="px-3 py-1.5 rounded-lg text-sm text-warm-600 font-medium">
-              Connexion
-            </a>
-            <a routerLink="/register"
-               class="px-3 py-1.5 rounded-lg text-sm font-semibold text-white bg-forest-600">
-              S'inscrire
-            </a>
           }
         </div>
 
