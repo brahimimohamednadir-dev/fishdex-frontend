@@ -182,5 +182,17 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
 
+  // ─── Pages légales (public) ───────────────────────────────────────────────
+  {
+    path: 'cgu',
+    loadComponent: () => import('./features/legal/cgu.component').then(m => m.CguComponent),
+    title: 'Conditions Générales d\'Utilisation — FishDex',
+  },
+  {
+    path: 'privacy',
+    loadComponent: () => import('./features/legal/privacy.component').then(m => m.PrivacyComponent),
+    title: 'Politique de Confidentialité — FishDex',
+  },
+
   { path: '**', redirectTo: 'captures' },
 ];
