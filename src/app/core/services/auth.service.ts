@@ -46,8 +46,18 @@ export class AuthService {
       }));
   }
 
-  register(username: string, email: string, password: string, privacyAccepted = true): Observable<ApiResponse<User>> {
-    return this.http.post<ApiResponse<User>>(`${this.api}/register`, { username, email, password, privacyAccepted });
+  register(
+    username: string,
+    email: string,
+    password: string,
+    privacyAccepted = true,
+    consents: { marketing?: boolean; analytics?: boolean } = {},
+  ): Observable<ApiResponse<User>> {
+    return this.http.post<ApiResponse<User>>(`${this.api}/register`, {
+      username, email, password, privacyAccepted,
+      marketingConsent: consents.marketing ?? false,
+      analyticsConsent: consents.analytics ?? false,
+    });
   }
 
   loginWithGoogle(): void {
